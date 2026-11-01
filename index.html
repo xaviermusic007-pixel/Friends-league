@@ -1,0 +1,2538 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Friends Cup • eFootball Mobile Knockout Tournament</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            pitch: {
+              950: '#040d08',
+              900: '#081c12',
+              800: '#0f3322',
+              700: '#164a31',
+              500: '#10b981',
+              400: '#34d399',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #060e0a;
+      color: #f1f5f9;
+      overflow-x: hidden;
+    }
+    .stadium-bg {
+      background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.18) 0%, rgba(6, 14, 10, 0.98) 65%);
+    }
+    .glass-card {
+      background: rgba(15, 29, 21, 0.82);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(52, 211, 153, 0.16);
+    }
+    .glass-card-subtle {
+      background: rgba(12, 22, 17, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .active-nav-tab {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      border-color: rgba(52, 211, 153, 0.45);
+    }
+    input, select, textarea {
+      font-size: 16px !important; /* Prevents iOS/Android Chrome auto-zoom on focus */
+    }
+  </style>
+</head>
+<body class="min-h-screen stadium-bg pb-24 md:pb-12 selection:bg-emerald-500 selection:text-slate-950">
+
+  <!-- =====================================================================
+       STEP 5 CONFIGURATION: PASTE YOUR SUPABASE URL & PUBLIC ANON KEY HERE
+       (Safe for public GitHub Pages hosting because Row Level Security (RLS)
+       in Supabase PostgreSQL protects all write/update/delete operations.)
+       ===================================================================== -->
+  <script>
+    const DEFAULT_SUPABASE_URL = "https://yqzmkjiqlyvddvjqaegp.supabase.co";
+    const DEFAULT_SUPABASE_ANON_KEY = "sb_publishable_VgOQ6iyEjTBeOeuEunUfVA_9PZwfqkY";
+  </script>
+
+  <!-- TOP CONNECTION & DEPLOYMENT STATUS BANNER -->
+  <div id="connectionBanner" class="bg-amber-950/90 border-b border-amber-500/30 px-3 py-2 text-xs text-amber-200">
+    <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span id="statusDot" class="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+        <span id="statusText" class="font-medium">
+          <strong>Status: Local Preview Mode</strong> (Not connected to live Supabase DB yet — changes save on this phone for testing)
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="openSetupModalBtn" type="button" class="px-2.5 py-1 rounded-md bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-100 font-semibold transition">
+          ⚙️ Connect Supabase / SQL Guide
+        </button>
+        <button id="refreshCloudBtn" type="button" class="hidden px-2.5 py-1 rounded-md bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-100 font-semibold transition">
+          🔄 Sync Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER & HERO -->
+  <header class="border-b border-emerald-500/20 bg-slate-950/60 sticky top-0 z-30 backdrop-blur-md">
+    <div class="max-w-5xl mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-900/40 shrink-0">
+          <!-- Trophy SVG -->
+          <svg class="w-6 h-6 text-slate-950" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V19H7v2h10v-2h-4v-3.1a5.01 5.01 0 003.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/>
+          </svg>
+        </div>
+        <div class="truncate">
+          <div class="flex items-center gap-2">
+            <h1 id="headerTitle" class="text-base sm:text-lg font-extrabold tracking-tight text-white truncate">Friends Cup eFootball Mobile</h1>
+            <span id="regStatusBadge" class="px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">Open</span>
+          </div>
+          <p id="headerSubtitle" class="text-xs text-slate-400 truncate">Knockout Format • Own Phone • Entry ₹20 • Prize Pool ₹100</p>
+        </div>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-xl border border-slate-800">
+        <button type="button" data-tab="public" class="nav-tab-btn active-nav-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-transparent transition">
+          ⚽ Public Hub
+        </button>
+        <button type="button" data-tab="bracket" class="nav-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white border border-transparent transition">
+          🏆 Fixtures & Bracket
+        </button>
+        <button type="button" data-tab="finance" class="nav-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white border border-transparent transition">
+          ₹ Financials
+        </button>
+        <button type="button" data-tab="admin" class="nav-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white border border-transparent transition">
+          🔒 Organiser Admin
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="max-w-5xl mx-auto px-3 sm:px-6 pt-4 space-y-6">
+
+    <!-- QUICK SUMMARY RIBBON (Visible across all tabs) -->
+    <section class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+      <div class="glass-card rounded-xl p-3">
+        <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Approved Players</div>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span id="ribbonApprovedCount" class="text-xl sm:text-2xl font-extrabold text-white">0</span>
+          <span id="ribbonPendingCount" class="text-xs text-amber-300 font-medium">0 pending</span>
+        </div>
+      </div>
+      <div class="glass-card rounded-xl p-3">
+        <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Entry Fee Collected</div>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span id="ribbonCollectedAmount" class="text-xl sm:text-2xl font-extrabold text-emerald-400">₹0</span>
+          <span id="ribbonPaidCount" class="text-xs text-slate-400 font-medium">0 paid @ ₹20</span>
+        </div>
+      </div>
+      <div class="glass-card rounded-xl p-3">
+        <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Fixed Prize Pool</div>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span id="ribbonPrizePool" class="text-xl sm:text-2xl font-extrabold text-amber-400">₹100</span>
+          <span class="text-[11px] text-slate-300 font-medium">₹70 / ₹20 / ₹10</span>
+        </div>
+      </div>
+      <div class="glass-card rounded-xl p-3">
+        <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Est. Net Remainder</div>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span id="ribbonNetRemainder" class="text-xl sm:text-2xl font-extrabold text-sky-400">₹0</span>
+          <span id="ribbonNetStatus" class="text-[11px] text-slate-400 font-medium">After ₹100 + exp</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         TAB 1: PUBLIC PLAYER AREA (#public)
+         =================================================================== -->
+    <div id="tab-public" class="tab-panel space-y-6">
+
+      <!-- Champions Podium Banner (Shows live standings / winners) -->
+      <section class="glass-card rounded-2xl p-4 sm:p-5 border border-amber-500/30 bg-gradient-to-r from-amber-950/30 via-slate-900/80 to-emerald-950/30">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-widest text-amber-400">Fixed ₹100 Prize Pool Distribution</span>
+            <h2 class="text-base sm:text-lg font-bold text-white">Tournament Honours & Prize Breakdown</h2>
+          </div>
+          <span class="text-xs text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700 self-start sm:self-auto">
+            Entry Fee: <strong class="text-emerald-400">₹20 / player</strong>
+          </span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <!-- 1st Place -->
+          <div class="rounded-xl bg-amber-500/10 border border-amber-400/30 p-3.5 flex items-center justify-between">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-amber-300">🥇 Champion (1st)</div>
+              <div id="podiumFirst" class="text-sm sm:text-base font-extrabold text-white mt-0.5">TBD (Final Winner)</div>
+            </div>
+            <div class="text-right">
+              <div class="text-lg sm:text-xl font-black text-amber-400">₹70</div>
+              <div class="text-[10px] text-amber-200/80">70% of pool</div>
+            </div>
+          </div>
+          <!-- 2nd Place -->
+          <div class="rounded-xl bg-slate-400/10 border border-slate-400/25 p-3.5 flex items-center justify-between">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-300">🥈 Runner-Up (2nd)</div>
+              <div id="podiumSecond" class="text-sm sm:text-base font-extrabold text-white mt-0.5">TBD (Final Runner-Up)</div>
+            </div>
+            <div class="text-right">
+              <div class="text-lg sm:text-xl font-black text-slate-200">₹20</div>
+              <div class="text-[10px] text-slate-400">Entry back</div>
+            </div>
+          </div>
+          <!-- 3rd Place -->
+          <div class="rounded-xl bg-orange-500/10 border border-orange-400/25 p-3.5 flex items-center justify-between">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-orange-300">🥉 Third Place (3rd)</div>
+              <div id="podiumThird" class="text-sm sm:text-base font-extrabold text-white mt-0.5">TBD (3rd Playoff Winner)</div>
+            </div>
+            <div class="text-right">
+              <div class="text-lg sm:text-xl font-black text-orange-300">₹10</div>
+              <div class="text-[10px] text-orange-200/80">3rd Playoff</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main 2-Column Public Grid: Registration + Rules/Updates -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left Column: Player Registration Form + Organiser Updates -->
+        <div class="lg:col-span-5 space-y-6">
+          <!-- Player Registration Card -->
+          <section class="glass-card rounded-2xl p-4 sm:p-5">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                <span>📝 Player Registration</span>
+              </h2>
+              <span class="text-xs font-semibold text-emerald-400">₹20 Entry</span>
+            </div>
+            <p id="upiPaymentNote" class="text-xs text-slate-300 bg-slate-900/90 border border-slate-800 rounded-xl p-3 mb-4 leading-relaxed">
+              Pay ₹20 entry fee to the Organiser via UPI / Cash to confirm your slot. Registrations start as <strong class="text-amber-300">Pending Approval</strong> until verified by the organiser.
+            </p>
+
+            <form id="playerRegForm" class="space-y-3.5">
+              <div>
+                <label for="regPlayerName" class="block text-xs font-semibold text-slate-300 mb-1">
+                  Player Name / Nickname <span class="text-rose-400">*</span>
+                </label>
+                <input
+                  id="regPlayerName"
+                  type="text"
+                  required
+                  maxlength="40"
+                  placeholder="e.g., Rahul_M15 or Arindam"
+                  class="w-full rounded-xl bg-slate-900/90 border border-slate-700 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400"
+                />
+              </div>
+
+              <div>
+                <label for="regEfootballId" class="block text-xs font-semibold text-slate-300 mb-1">
+                  eFootball Mobile ID <span class="text-slate-500 font-normal">(Optional)</span>
+                </label>
+                <input
+                  id="regEfootballId"
+                  type="text"
+                  maxlength="30"
+                  placeholder="e.g., ASDF-123-456-789"
+                  class="w-full rounded-xl bg-slate-900/90 border border-slate-700 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400"
+                />
+              </div>
+
+              <div>
+                <label for="regContactNote" class="block text-xs font-semibold text-slate-300 mb-1">
+                  Friend Group / Payment Reference <span class="text-slate-500 font-normal">(Optional)</span>
+                </label>
+                <input
+                  id="regContactNote"
+                  type="text"
+                  maxlength="60"
+                  placeholder="e.g., Paid ₹20 via GPay / Friend of Sayan"
+                  class="w-full rounded-xl bg-slate-900/90 border border-slate-700 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400"
+                />
+              </div>
+
+              <button
+                id="submitRegBtn"
+                type="submit"
+                class="w-full py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-950/50 transition"
+              >
+                Submit Tournament Registration
+              </button>
+            </form>
+          </section>
+
+          <!-- Organiser Updates / Announcements -->
+          <section class="glass-card rounded-2xl p-4 sm:p-5">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-base font-bold text-white">📢 Organiser Updates</h2>
+              <span id="announcementCountBadge" class="text-xs text-slate-400">1 update</span>
+            </div>
+            <div id="announcementsList" class="space-y-3"></div>
+          </section>
+
+          <!-- Official Tournament Rules Card -->
+          <section class="glass-card rounded-2xl p-4 sm:p-5">
+            <h2 class="text-base font-bold text-white mb-3">📋 Tournament Rules</h2>
+            <ul class="space-y-2 text-xs sm:text-sm text-slate-300">
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 font-bold">1.</span>
+                <span><strong>Game & Device:</strong> eFootball Mobile. Every participant plays on their own mobile phone via Friend Match room code.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 font-bold">2.</span>
+                <span><strong>Knockout Format:</strong> Single-elimination knockout bracket. Extra Time + Penalties ON for all knockout ties. Semi-final losers play a <strong>Third-Place Playoff</strong> for the ₹10 prize.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 font-bold">3.</span>
+                <span><strong>Entry & Verification:</strong> Entry fee is <strong>₹20 per player</strong>. Only players approved by the Organiser are seeded into the knockout draw.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 font-bold">4.</span>
+                <span><strong>Score Submission:</strong> Take a screenshot of the final match result screen and send it to the Organiser so official scores can be updated.</span>
+              </li>
+            </ul>
+          </section>
+        </div>
+
+        <!-- Right Column: Registered & Approved Players Roster -->
+        <div class="lg:col-span-7 space-y-6">
+          <section class="glass-card rounded-2xl p-4 sm:p-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div>
+                <h2 class="text-base sm:text-lg font-bold text-white">👥 Players & Registration Status</h2>
+                <p class="text-xs text-slate-400">Approved players are eligible for knockout bracket seeding</p>
+              </div>
+              <!-- Roster Filter Buttons -->
+              <div class="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 self-start">
+                <button type="button" data-player-filter="approved" class="player-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-300">
+                  Approved
+                </button>
+                <button type="button" data-player-filter="pending" class="player-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
+                  Pending
+                </button>
+                <button type="button" data-player-filter="all" class="player-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
+                  All
+                </button>
+              </div>
+            </div>
+
+            <div id="publicPlayersList" class="space-y-2.5"></div>
+          </section>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         TAB 2: FIXTURES, RESULTS & KNOCKOUT BRACKET (#bracket)
+         =================================================================== -->
+    <div id="tab-bracket" class="tab-panel hidden space-y-6">
+      <section class="glass-card rounded-2xl p-4 sm:p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-white">🏆 Knockout Bracket & Match Results</h2>
+            <p class="text-xs text-slate-400">Winners advance automatically • Semi-Final losers enter the 3rd-Place Playoff</p>
+          </div>
+          <!-- Round Filter -->
+          <div class="flex flex-wrap items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+            <button type="button" data-round-filter="all" class="round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-300">
+              All Rounds
+            </button>
+            <button type="button" data-round-filter="Quarter-Finals" class="round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
+              Quarter-Finals
+            </button>
+            <button type="button" data-round-filter="Semi-Finals" class="round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
+              Semi-Finals
+            </button>
+            <button type="button" data-round-filter="Third-Place Playoff" class="round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
+              3rd Place
+            </button>
+            <button type="button" data-round-filter="Final" class="round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
+              Final
+            </button>
+          </div>
+        </div>
+
+        <div id="bracketContainer" class="space-y-6"></div>
+      </section>
+    </div>
+
+    <!-- ===================================================================
+         TAB 3: FINANCIAL DASHBOARD (#finance)
+         =================================================================== -->
+    <div id="tab-finance" class="tab-panel hidden space-y-6">
+      <section class="glass-card rounded-2xl p-4 sm:p-5">
+        <div class="mb-4">
+          <span class="text-[11px] font-bold uppercase tracking-widest text-emerald-400">Transparent Tournament Accounting</span>
+          <h2 class="text-lg font-bold text-white">₹ Financial Dashboard & Balance Sheet</h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Tracks entries, collected entry fees, fixed ₹100 prize pool commitments, organiser expenses, and net remainder separately.
+          </p>
+        </div>
+
+        <!-- Primary Accounting Formula Banner -->
+        <div class="rounded-2xl bg-slate-900/95 border border-emerald-500/30 p-4 mb-6">
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+            Explicit Accounting Formula (Organiser Remainder vs. Collected Entry Fees)
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-7 gap-2 items-center text-center">
+            <div class="md:col-span-2 rounded-xl bg-emerald-950/50 border border-emerald-500/30 p-3">
+              <div class="text-[11px] text-emerald-300 font-semibold">Actual Money Collected</div>
+              <div id="formulaCollected" class="text-xl font-black text-emerald-400 mt-0.5">₹0</div>
+              <div id="formulaCollectedSub" class="text-[11px] text-slate-400">0 paid × ₹20</div>
+            </div>
+            <div class="text-lg font-black text-slate-400">−</div>
+            <div class="rounded-xl bg-amber-950/40 border border-amber-500/30 p-3">
+              <div class="text-[11px] text-amber-300 font-semibold">Fixed Prize Pool</div>
+              <div id="formulaPrizePool" class="text-xl font-black text-amber-400 mt-0.5">₹100</div>
+              <div id="formulaPrizeSub" class="text-[11px] text-slate-400">₹70 + ₹20 + ₹10</div>
+            </div>
+            <div class="text-lg font-black text-slate-400">−</div>
+            <div class="rounded-xl bg-rose-950/40 border border-rose-500/30 p-3">
+              <div class="text-[11px] text-rose-300 font-semibold">Organiser Expenses</div>
+              <div id="formulaExpenses" class="text-xl font-black text-rose-400 mt-0.5">₹0</div>
+              <div id="formulaExpensesSub" class="text-[11px] text-slate-400">0 items logged</div>
+            </div>
+            <div class="md:col-span-1 rounded-xl bg-sky-950/50 border border-sky-400/40 p-3">
+              <div class="text-[11px] text-sky-300 font-semibold">= Est. Remainder</div>
+              <div id="formulaRemainder" class="text-xl font-black text-sky-300 mt-0.5">₹0</div>
+              <div id="formulaRemainderTag" class="text-[10px] text-slate-300">Net Balance</div>
+            </div>
+          </div>
+          <p id="financeExplanationNote" class="mt-3 text-xs text-slate-300 bg-slate-950/80 rounded-lg px-3 py-2 border border-slate-800">
+            Note: Collected Entry Fees represent gross cash received from players. The Organiser's Estimated Remaining Balance is what remains (or is needed from the organiser) after setting aside the fixed ₹100 prize pool and deducting tournament expenses.
+          </p>
+        </div>
+
+        <!-- Detailed Metrics Breakdown Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <!-- 1. Registration & Entry Fee Breakdown -->
+          <div class="glass-card-subtle rounded-xl p-4 space-y-2.5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">1. Entries & Fee Collection</h3>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">Total Registered Players:</span>
+              <span id="finTotalReg" class="font-bold text-white">0</span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">Approved / Pending / Rejected:</span>
+              <span id="finApprovalSplit" class="font-semibold text-slate-200">0 / 0 / 0</span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">Paid Entries (@ ₹20):</span>
+              <span id="finPaidEntries" class="font-bold text-emerald-400">0 players (₹0)</span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">Unpaid Entries (Pending ₹20):</span>
+              <span id="finUnpaidEntries" class="font-bold text-amber-300">0 players (₹0 uncollected)</span>
+            </div>
+          </div>
+
+          <!-- 2. Prize Commitments Breakdown -->
+          <div class="glass-card-subtle rounded-xl p-4 space-y-2.5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400">2. Fixed ₹100 Prize Commitments</h3>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">🥇 Champion Prize:</span>
+              <span class="font-bold text-white">₹70</span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">🥈 Runner-Up Prize:</span>
+              <span class="font-bold text-white">₹20</span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">🥉 Third Place Prize:</span>
+              <span class="font-bold text-white">₹10</span>
+            </div>
+            <div class="flex justify-between text-xs pt-1 border-t border-slate-800">
+              <span class="text-slate-400">Prizes Disbursed / Paid Out:</span>
+              <span id="finPrizeDisbursed" class="font-bold text-amber-300">₹0 of ₹100</span>
+            </div>
+          </div>
+
+          <!-- 3. Expenses & Break-Even Analysis -->
+          <div class="glass-card-subtle rounded-xl p-4 space-y-2.5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-sky-400">3. Expenses & Break-Even</h3>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">Total Committed Outflow:</span>
+              <span id="finTotalOutflow" class="font-bold text-white">₹100 (Prize + Exp)</span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">Paid Players Needed for ₹100 Pool:</span>
+              <span class="font-semibold text-slate-200">5 paid players (5 × ₹20)</span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">Cash Still Held in Hand:</span>
+              <span id="finCashInHand" class="font-bold text-emerald-300">₹0</span>
+            </div>
+            <div class="flex justify-between text-xs pt-1 border-t border-slate-800">
+              <span class="text-slate-400">Organiser Estimated Remainder:</span>
+              <span id="finEstimatedRemainder" class="font-extrabold text-sky-400">₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Itemized Expense Ledger -->
+        <div>
+          <h3 class="text-sm font-bold text-white mb-2.5">🧾 Itemized Organiser Expense Ledger</h3>
+          <div id="publicExpenseList" class="space-y-2"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================================================================
+         TAB 4: PRIVATE ORGANISER / ADMIN AREA (#admin)
+         =================================================================== -->
+    <div id="tab-admin" class="tab-panel hidden space-y-6">
+
+      <!-- Admin Authentication Gate Card -->
+      <section class="glass-card rounded-2xl p-4 sm:p-5 border border-emerald-500/30">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-widest text-emerald-400">Protected Organiser Console</span>
+            <h2 class="text-lg font-bold text-white">🔒 Private Organiser / Admin Area</h2>
+            <p id="adminAuthStatusSub" class="text-xs text-slate-400">
+              Only the authorised tournament organiser can approve players, record ₹20 payments, generate fixtures, or enter match scores.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="adminLogoutBtn" type="button" class="hidden px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-xs font-bold text-rose-200 transition">
+              Sign Out Admin
+            </button>
+          </div>
+        </div>
+
+        <!-- Login Box (Shown when locked) -->
+        <div id="adminLoginGate" class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-800">
+          <!-- Cloud Supabase Auth Login -->
+          <div class="rounded-xl bg-slate-900/90 border border-slate-800 p-4 space-y-3">
+            <div class="text-xs font-bold uppercase tracking-wider text-emerald-400">Option A: Live Supabase Organiser Login</div>
+            <p class="text-xs text-slate-400">
+              Once your Supabase project is connected, sign in with your Google Account or Organiser Email/Password verified by Row Level Security (<code class="text-emerald-300">is_tournament_admin()</code>).
+            </p>
+            <form id="supabaseAdminLoginForm" class="space-y-2.5">
+              <input
+                id="adminEmailInput"
+                type="email"
+                placeholder="Your Google/Organiser Email"
+                class="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-xs text-white"
+              />
+              <input
+                id="adminPasswordInput"
+                type="password"
+                placeholder="Supabase Admin Password (if using email/password)"
+                class="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-xs text-white"
+              />
+              <div class="flex flex-wrap gap-2">
+                <button type="submit" class="flex-1 py-2 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition">
+                  Sign In with Email
+                </button>
+                <button id="googleOAuthLoginBtn" type="button" class="flex-1 py-2 px-3 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs transition">
+                  Sign In with Google
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Local Sandbox Preview Unlock (For testing before Supabase deployment) -->
+          <div class="rounded-xl bg-amber-950/30 border border-amber-500/30 p-4 flex flex-col justify-between space-y-3">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-amber-300">Option B: Local Preview Mode (Test Before Deploying)</div>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                While testing locally before connecting Supabase, unlock the Organiser Console below to test approving registrations, recording ₹20 fees, generating the knockout bracket, and entering scores.
+              </p>
+            </div>
+            <button id="unlockPreviewAdminBtn" type="button" class="w-full py-2.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs transition">
+              🔓 Unlock Organiser Console (Local Test Mode)
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- UNLOCKED ADMIN WORKSPACE -->
+      <div id="adminWorkspace" class="hidden space-y-6">
+
+        <!-- 1. Manage Players, Approvals & ₹20 Payments -->
+        <section class="glass-card rounded-2xl p-4 sm:p-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <div>
+              <h3 class="text-base font-bold text-white">1. Approve Players & Track ₹20 Entry Fees</h3>
+              <p class="text-xs text-slate-400">Tap Approve/Reject and toggle Paid (₹20) vs Unpaid (₹0)</p>
+            </div>
+            <button id="openQuickAddPlayerBtn" type="button" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-xs font-bold text-emerald-300 self-start">
+              + Add Player Manually
+            </button>
+          </div>
+
+          <!-- Quick Add Player Inline Bar -->
+          <form id="adminQuickAddForm" class="hidden mb-4 p-3 rounded-xl bg-slate-900 border border-slate-700 grid grid-cols-1 sm:grid-cols-4 gap-2">
+            <input id="adminAddName" type="text" required placeholder="Player Name *" class="rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-xs text-white" />
+            <input id="adminAddEfId" type="text" placeholder="eFootball ID (optional)" class="rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-xs text-white" />
+            <select id="adminAddPaid" class="rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-xs text-white">
+              <option value="paid">Approved + Paid (₹20)</option>
+              <option value="unpaid">Approved + Unpaid (₹0)</option>
+            </select>
+            <button type="submit" class="rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs py-2 px-3">
+              Save Player
+            </button>
+          </form>
+
+          <div id="adminPlayersTable" class="space-y-2.5"></div>
+        </section>
+
+        <!-- 2. Generate Knockout Bracket & Enter Match Scores -->
+        <section class="glass-card rounded-2xl p-4 sm:p-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <div>
+              <h3 class="text-base font-bold text-white">2. Knockout Fixture Generator & Score Entry</h3>
+              <p class="text-xs text-slate-400">Generates Quarter-Finals/Semi-Finals + 3rd-Place Playoff + Final from Approved Players</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="bracketSizeSelect" class="rounded-xl bg-slate-900 border border-slate-700 px-3 py-1.5 text-xs text-white font-semibold">
+                <option value="4">4-Player Knockout (SF + 3rd + Final)</option>
+                <option value="8" selected>8-Player Knockout (QF + SF + 3rd + Final)</option>
+              </select>
+              <button id="generateBracketBtn" type="button" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition">
+                ⚡ Generate Knockout Fixtures
+              </button>
+            </div>
+          </div>
+
+          <div id="adminMatchesList" class="space-y-3"></div>
+        </section>
+
+        <!-- 3. Expenses, Prize Payouts & Announcements -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Expense & Prize Disbursal Manager -->
+          <section class="glass-card rounded-2xl p-4 sm:p-5 space-y-4">
+            <div>
+              <h3 class="text-base font-bold text-white">3. Expenses & Prize Payout Status</h3>
+              <p class="text-xs text-slate-400">Expenses reduce the organiser's net remainder without changing collected entry fees</p>
+            </div>
+
+            <!-- Prize Paid Out Selector -->
+            <div class="rounded-xl bg-slate-900/90 border border-slate-800 p-3 flex items-center justify-between gap-2">
+              <div>
+                <div class="text-xs font-bold text-amber-300">Prize Pool Disbursed (Out of ₹100)</div>
+                <div class="text-[11px] text-slate-400">Track how much of the ₹100 pool has been paid to winners</div>
+              </div>
+              <select id="prizePaidOutSelect" class="rounded-lg bg-slate-950 border border-slate-700 px-2.5 py-1.5 text-xs text-white font-bold">
+                <option value="0">₹0 Paid Out (₹100 Committed)</option>
+                <option value="10">₹10 Paid (3rd Place)</option>
+                <option value="30">₹30 Paid (2nd + 3rd)</option>
+                <option value="70">₹70 Paid (1st Place)</option>
+                <option value="100">₹100 Fully Paid Out</option>
+              </select>
+            </div>
+
+            <!-- Add Expense Form -->
+            <form id="addExpenseForm" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <input id="expenseTitleInput" type="text" required maxlength="60" placeholder="Expense item (e.g. Mobile Data)" class="sm:col-span-2 rounded-xl bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-white" />
+              <div class="flex gap-2">
+                <input id="expenseAmountInput" type="number" required min="1" max="5000" placeholder="₹ Amt" class="w-full rounded-xl bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-white" />
+                <button type="submit" class="px-3 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-slate-950 font-extrabold text-xs shrink-0">
+                  + Add
+                </button>
+              </div>
+            </form>
+
+            <div id="adminExpenseList" class="space-y-2"></div>
+          </section>
+
+          <!-- Organiser Announcements & Tournament Settings -->
+          <section class="glass-card rounded-2xl p-4 sm:p-5 space-y-4">
+            <div>
+              <h3 class="text-base font-bold text-white">4. Post Organiser Update & Settings</h3>
+              <p class="text-xs text-slate-400">Keep players informed about match room timings & payment deadlines</p>
+            </div>
+
+            <form id="addAnnouncementForm" class="space-y-2.5">
+              <input id="annEditIdInput" type="hidden" value="" />
+              <input id="annTitleInput" type="text" required maxlength="80" placeholder="Update Headline (e.g., Semi-Finals tonight at 9 PM)" class="w-full rounded-xl bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-white" />
+              <textarea id="annBodyInput" rows="2" required maxlength="400" placeholder="Details for players..." class="w-full rounded-xl bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-white"></textarea>
+              <div class="flex items-center justify-between gap-2">
+                <label class="flex items-center gap-2 text-xs text-slate-300">
+                  <input id="annPinnedInput" type="checkbox" class="rounded border-slate-700 text-emerald-500" />
+                  Pin to top of Public Hub
+                </label>
+                <div class="flex items-center gap-1.5">
+                  <button id="cancelAnnEditBtn" type="button" class="hidden px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs">
+                    Cancel Edit
+                  </button>
+                  <button id="submitAnnBtn" type="submit" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs">
+                    Post Update
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            <!-- Existing Announcements List (Edit / Pin / Delete) -->
+            <div class="space-y-1.5 pt-2 border-t border-slate-800/80">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Manage Existing Updates</div>
+              <div id="adminAnnouncementsList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+            </div>
+
+            <!-- Edit Tournament Title & Payment Note -->
+            <form id="tournamentSettingsForm" class="pt-3 border-t border-slate-800 space-y-2">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Edit Tournament Title & Payment Note</div>
+              <input id="settingTournamentName" type="text" required maxlength="60" placeholder="Tournament Title" class="w-full rounded-xl bg-slate-900 border border-slate-700 px-3 py-1.5 text-xs text-white" />
+              <input id="settingUpiNote" type="text" required maxlength="180" placeholder="Payment instructions (e.g. Pay ₹20 via GPay to 98XXXXXX)" class="w-full rounded-xl bg-slate-900 border border-slate-700 px-3 py-1.5 text-xs text-white" />
+              <div class="flex items-center justify-between pt-1">
+                <button id="toggleRegOpenBtn" type="button" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-xs font-bold text-emerald-300">
+                  Registration: OPEN
+                </button>
+                <button type="submit" class="px-3 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold text-xs">
+                  Save Info
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+
+        <!-- 5. Export Data & WhatsApp Share -->
+        <section class="glass-card rounded-2xl p-4 sm:p-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-base font-bold text-white">5. Export Tournament Data & Share Summary</h3>
+              <p class="text-xs text-slate-400">Download records for backup or copy a formatted WhatsApp report on your Samsung M15</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button id="copyWhatsappBtn" type="button" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition">
+                📲 Copy WhatsApp Summary
+              </button>
+              <button id="exportCsvBtn" type="button" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs border border-slate-700 transition">
+                📊 Export Players CSV
+              </button>
+              <button id="exportJsonBtn" type="button" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs border border-slate-700 transition">
+                💾 Export Full JSON
+              </button>
+              <button id="resetDemoDataBtn" type="button" class="px-3.5 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 font-bold text-xs border border-rose-500/30 transition">
+                Reset Local Demo Data
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MOBILE BOTTOM NAVIGATION BAR (Samsung M15 Optimized) -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-lg border-t border-slate-800 px-2 py-1.5">
+    <div class="grid grid-cols-4 gap-1 max-w-md mx-auto">
+      <button type="button" data-tab="public" class="nav-tab-btn active-nav-tab flex flex-col items-center justify-center py-1.5 rounded-xl border border-transparent text-[11px] font-bold">
+        <span class="text-base leading-none mb-0.5">⚽</span>
+        <span>Public Hub</span>
+      </button>
+      <button type="button" data-tab="bracket" class="nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl border border-transparent text-slate-400 text-[11px] font-bold">
+        <span class="text-base leading-none mb-0.5">🏆</span>
+        <span>Bracket</span>
+      </button>
+      <button type="button" data-tab="finance" class="nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl border border-transparent text-slate-400 text-[11px] font-bold">
+        <span class="text-base leading-none mb-0.5">₹</span>
+        <span>Finance</span>
+      </button>
+      <button type="button" data-tab="admin" class="nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl border border-transparent text-slate-400 text-[11px] font-bold">
+        <span class="text-base leading-none mb-0.5">🔒</span>
+        <span>Organiser</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- =====================================================================
+       MODAL 1: SCORE ENTRY & AUTOMATIC WINNER ADVANCEMENT
+       ===================================================================== -->
+  <div id="scoreModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card rounded-2xl max-w-md w-full p-5 border border-emerald-500/40 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <span id="scoreModalRound" class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Match Score</span>
+          <h3 id="scoreModalTitle" class="text-base font-bold text-white">Enter Match Result</h3>
+        </div>
+        <button id="closeScoreModalBtn" type="button" class="text-slate-400 hover:text-white text-sm font-bold px-2 py-1">✕</button>
+      </div>
+
+      <form id="scoreModalForm" class="space-y-4">
+        <input id="scoreMatchId" type="hidden" />
+        <div class="grid grid-cols-2 gap-3">
+          <div class="rounded-xl bg-slate-900 p-3 border border-slate-800 text-center">
+            <label id="scoreP1Label" for="scoreP1Input" class="block text-xs font-bold text-white truncate mb-2">Player 1</label>
+            <input id="scoreP1Input" type="number" min="0" max="30" required class="w-full text-center text-xl font-black rounded-lg bg-slate-950 border border-slate-700 py-2 text-emerald-400" value="0" />
+          </div>
+          <div class="rounded-xl bg-slate-900 p-3 border border-slate-800 text-center">
+            <label id="scoreP2Label" for="scoreP2Input" class="block text-xs font-bold text-white truncate mb-2">Player 2</label>
+            <input id="scoreP2Input" type="number" min="0" max="30" required class="w-full text-center text-xl font-black rounded-lg bg-slate-950 border border-slate-700 py-2 text-emerald-400" value="0" />
+          </div>
+        </div>
+
+        <!-- Penalty Shootout Tie-Breaker Box -->
+        <div class="rounded-xl bg-amber-950/30 border border-amber-500/30 p-3 space-y-2">
+          <div class="text-xs font-bold text-amber-300">Penalty Shootout (Required only if scores are level)</div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="penP1Input" class="block text-[11px] text-slate-400 mb-1">P1 Penalties</label>
+              <input id="penP1Input" type="number" min="0" max="30" placeholder="Optional" class="w-full text-center text-sm font-bold rounded-lg bg-slate-950 border border-slate-700 py-1.5 text-white" />
+            </div>
+            <div>
+              <label for="penP2Input" class="block text-[11px] text-slate-400 mb-1">P2 Penalties</label>
+              <input id="penP2Input" type="number" min="0" max="30" placeholder="Optional" class="w-full text-center text-sm font-bold rounded-lg bg-slate-950 border border-slate-700 py-1.5 text-white" />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" id="cancelScoreModalBtn" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300">
+            Cancel
+          </button>
+          <button type="submit" class="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-xs font-extrabold text-slate-950">
+            Save & Advance Winner
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       MODAL 2: SUPABASE CONNECTION & ANDROID CHROME SETUP WIZARD
+       ===================================================================== -->
+  <div id="setupModal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="glass-card rounded-2xl max-w-xl w-full p-4 sm:p-6 border border-emerald-500/40 space-y-4 my-auto max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Cloud Database Connection</span>
+          <h3 class="text-base sm:text-lg font-bold text-white">Connect Free Supabase Database</h3>
+        </div>
+        <button id="closeSetupModalBtn" type="button" class="text-slate-400 hover:text-white text-sm font-bold px-2 py-1">✕</button>
+      </div>
+
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Paste your <strong>Supabase Project URL</strong> and <strong>Public Anon Key</strong> (`anon` `public`) below to test live cloud sync immediately, or hardcode them into <code class="text-emerald-300">DEFAULT_SUPABASE_URL</code> and <code class="text-emerald-300">DEFAULT_SUPABASE_ANON_KEY</code> at the top of <code class="text-emerald-300">index.html</code> before uploading to GitHub Pages.
+      </p>
+
+      <div class="rounded-xl bg-rose-950/40 border border-rose-500/30 p-3 text-xs text-rose-200">
+        <strong>Security Rule:</strong> Only use your <strong>anon public</strong> key. <strong>Never</strong> paste your <code class="text-rose-300">service_role</code> secret key or database password into website code.
+      </div>
+
+      <form id="supabaseConfigForm" class="space-y-3">
+        <div>
+          <label for="cfgSupabaseUrl" class="block text-xs font-semibold text-slate-300 mb-1">Supabase Project URL</label>
+          <input id="cfgSupabaseUrl" type="url" placeholder="https://your-project-id.supabase.co" class="w-full rounded-xl bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-white" />
+        </div>
+        <div>
+          <label for="cfgSupabaseKey" class="block text-xs font-semibold text-slate-300 mb-1">Supabase Public Anon Key (anon public)</label>
+          <input id="cfgSupabaseKey" type="text" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." class="w-full rounded-xl bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-white" />
+        </div>
+        <div class="flex flex-wrap gap-2 pt-2">
+          <button type="submit" class="flex-1 py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs">
+            Save & Connect Live DB
+          </button>
+          <button id="disconnectSupabaseBtn" type="button" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs">
+            Switch to Local Preview
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-20 md:bottom-6 right-4 z-50 space-y-2 max-w-xs w-full pointer-events-none"></div>
+
+  <!-- =====================================================================
+       APPLICATION LOGIC (SUPPORTS BOTH SUPABASE CLOUD & LOCAL SANDBOX MODE)
+       ===================================================================== -->
+  <script>
+    (function () {
+      const STORAGE_KEY = 'friends_cup_efootball_v1';
+      const CONFIG_STORAGE_KEY = 'friends_cup_supabase_cfg_v1';
+
+      // Initial Sample State for Local Preview Mode (Realistic 6 registered players so user can test everything right away)
+      function getInitialDemoState() {
+        return {
+          tournament: {
+            id: 'friends-cup-1',
+            name: 'Friends Cup eFootball Mobile',
+            subtitle: 'Knockout Format • Own Phone • Entry ₹20 • Prize Pool ₹100',
+            entry_fee: 20,
+            prize_pool_total: 100,
+            prize_first: 70,
+            prize_second: 20,
+            prize_third: 10,
+            prize_paid_out: 0,
+            registration_open: true,
+            bracket_size: 4,
+            upi_note: 'Pay ₹20 entry fee to the Organiser via UPI / Cash to confirm your slot. Fixed Prize Pool: ₹100 (🥇 ₹70, 🥈 ₹20, 🥉 ₹10).'
+          },
+          registrations: [
+            { id: 'p-1', player_name: 'Arindam (Host)', efootball_id: 'ASDF-881-204', contact_note: 'Organiser • Samsung M15', approval_status: 'approved', payment_status: 'paid', amount_paid: 20, seed_number: 1, created_at: '2026-11-01T10:00:00Z' },
+            { id: 'p-2', player_name: 'Sayan_10', efootball_id: 'ASDF-442-910', contact_note: 'Paid ₹20 via GPay', approval_status: 'approved', payment_status: 'paid', amount_paid: 20, seed_number: 2, created_at: '2026-11-01T10:05:00Z' },
+            { id: 'p-3', player_name: 'Rohan_CR7', efootball_id: 'ASDF-719-331', contact_note: 'Paid ₹20 Cash', approval_status: 'approved', payment_status: 'paid', amount_paid: 20, seed_number: 3, created_at: '2026-11-01T10:12:00Z' },
+            { id: 'p-4', player_name: 'Subhojit_LM10', efootball_id: 'ASDF-509-118', contact_note: 'Paid ₹20 PhonePe', approval_status: 'approved', payment_status: 'paid', amount_paid: 20, seed_number: 4, created_at: '2026-11-01T10:18:00Z' },
+            { id: 'p-5', player_name: 'Pritam_K', efootball_id: 'ASDF-601-889', contact_note: 'Paid ₹20 GPay', approval_status: 'approved', payment_status: 'paid', amount_paid: 20, seed_number: 5, created_at: '2026-11-01T10:25:00Z' },
+            { id: 'p-6', player_name: 'Debanjan_99', efootball_id: '', contact_note: 'Will pay ₹20 tonight', approval_status: 'pending', payment_status: 'unpaid', amount_paid: 0, seed_number: null, created_at: '2026-11-01T10:30:00Z' }
+          ],
+          matches: [
+            {
+              id: 'SF-1',
+              round_name: 'Semi-Finals',
+              round_order: 2,
+              match_number: 1,
+              player1_id: 'p-1',
+              player2_id: 'p-4',
+              player1_name: 'Arindam (Host)',
+              player2_name: 'Subhojit_LM10',
+              score1: 2,
+              score2: 1,
+              pen1: null,
+              pen2: null,
+              status: 'completed',
+              winner_id: 'p-1',
+              winner_name: 'Arindam (Host)',
+              next_match_id: 'FIN-1',
+              next_match_slot: 1,
+              loser_next_match_id: '3RD-1',
+              loser_next_match_slot: 1
+            },
+            {
+              id: 'SF-2',
+              round_name: 'Semi-Finals',
+              round_order: 2,
+              match_number: 2,
+              player1_id: 'p-2',
+              player2_id: 'p-3',
+              player1_name: 'Sayan_10',
+              player2_name: 'Rohan_CR7',
+              score1: null,
+              score2: null,
+              pen1: null,
+              pen2: null,
+              status: 'upcoming',
+              winner_id: null,
+              winner_name: null,
+              next_match_id: 'FIN-1',
+              next_match_slot: 2,
+              loser_next_match_id: '3RD-1',
+              loser_next_match_slot: 2
+            },
+            {
+              id: '3RD-1',
+              round_name: 'Third-Place Playoff',
+              round_order: 3,
+              match_number: 1,
+              player1_id: 'p-4',
+              player2_id: null,
+              player1_name: 'Subhojit_LM10',
+              player2_name: 'Loser SF-2',
+              score1: null,
+              score2: null,
+              pen1: null,
+              pen2: null,
+              status: 'upcoming',
+              winner_id: null,
+              winner_name: null,
+              next_match_id: null,
+              next_match_slot: null,
+              loser_next_match_id: null,
+              loser_next_match_slot: null
+            },
+            {
+              id: 'FIN-1',
+              round_name: 'Final',
+              round_order: 4,
+              match_number: 1,
+              player1_id: 'p-1',
+              player2_id: null,
+              player1_name: 'Arindam (Host)',
+              player2_name: 'Winner SF-2',
+              score1: null,
+              score2: null,
+              pen1: null,
+              pen2: null,
+              status: 'upcoming',
+              winner_id: null,
+              winner_name: null,
+              next_match_id: null,
+              next_match_slot: null,
+              loser_next_match_id: null,
+              loser_next_match_slot: null
+            }
+          ],
+          expenses: [
+            { id: 'exp-1', title: 'Fixture graphics & match room data boost', category: 'Admin', amount: 10, created_at: '2026-11-01T10:15:00Z' }
+          ],
+          announcements: [
+            {
+              id: 'ann-1',
+              title: 'Welcome to Friends Cup eFootball Mobile!',
+              body: 'Register with your Player Name and optional eFootball ID. Entry fee is ₹20 per player. Fixed Prize Pool is ₹100 (Champion ₹70, Runner-up ₹20, 3rd Place ₹10). Every player plays on their own phone.',
+              pinned: true,
+              created_at: '2026-11-01T09:30:00Z'
+            }
+          ]
+        };
+      }
+
+      // Application State
+      let state = getInitialDemoState();
+      let activeTab = 'public';
+      let playerFilter = 'approved';
+      let roundFilter = 'all';
+      let isAdminUnlocked = false;
+      let isCloudConnected = false;
+      let supabaseClient = null;
+
+      // Safe localStorage helpers
+      function loadLocalState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && parsed.tournament && Array.isArray(parsed.registrations)) {
+              state = parsed;
+            }
+          }
+        } catch (err) {
+          console.warn('localStorage read unavailable:', err);
+        }
+      }
+
+      function saveLocalState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (err) {
+          console.warn('localStorage write unavailable:', err);
+        }
+      }
+
+      function normalizeSupabaseUrl(raw) {
+        let u = String(raw || '').trim();
+        if (!u) return '';
+        u = u.replace(/^Https:\/\//i, 'https://').replace(/^http:\/\//i, 'https://');
+        u = u.replace(/\/rest\/v1\/?$/i, '').replace(/\/+$/, '');
+        return u;
+      }
+
+      function getSavedSupabaseConfig() {
+        let url = normalizeSupabaseUrl(DEFAULT_SUPABASE_URL);
+        let key = (DEFAULT_SUPABASE_ANON_KEY || '').trim();
+        try {
+          const saved = localStorage.getItem(CONFIG_STORAGE_KEY);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed.url && parsed.key) {
+              url = normalizeSupabaseUrl(parsed.url);
+              key = parsed.key.trim();
+            }
+          }
+        } catch (e) {}
+        return { url, key };
+      }
+
+      // Toast Notification Helper
+      function showToast(message, type) {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const el = document.createElement('div');
+        const colors = type === 'error'
+          ? 'bg-rose-950/95 border-rose-500/50 text-rose-100'
+          : type === 'warn'
+          ? 'bg-amber-950/95 border-amber-500/50 text-amber-100'
+          : 'bg-emerald-950/95 border-emerald-500/50 text-emerald-100';
+        el.className = 'pointer-events-auto rounded-xl border px-3.5 py-2.5 text-xs font-semibold shadow-xl transition ' + colors;
+        el.textContent = message;
+        container.appendChild(el);
+        setTimeout(function () {
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }, 3600);
+      }
+
+      // Escape HTML helper to prevent XSS
+      function esc(str) {
+        return String(str == null ? '' : str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      // Initialize Supabase if credentials exist
+      async function initSupabaseConnection() {
+        const cfg = getSavedSupabaseConfig();
+        const urlInput = document.getElementById('cfgSupabaseUrl');
+        const keyInput = document.getElementById('cfgSupabaseKey');
+        if (urlInput) urlInput.value = cfg.url;
+        if (keyInput) keyInput.value = cfg.key;
+
+        if (cfg.url && cfg.key && window.supabase && typeof window.supabase.createClient === 'function') {
+          try {
+            supabaseClient = window.supabase.createClient(cfg.url, cfg.key);
+            await syncFromSupabase();
+            isCloudConnected = true;
+            updateConnectionBanner();
+            // Check existing auth session
+            const { data: sessionData } = await supabaseClient.auth.getSession();
+            if (sessionData && sessionData.session) {
+              isAdminUnlocked = true;
+              updateAdminAuthUI(sessionData.session.user.email);
+            }
+          } catch (err) {
+            console.warn('Supabase connection fallback to Local Preview:', err);
+            isCloudConnected = false;
+            updateConnectionBanner();
+          }
+        } else {
+          isCloudConnected = false;
+          updateConnectionBanner();
+        }
+      }
+
+      async function syncFromSupabase() {
+        if (!supabaseClient) return;
+        const [tRes, rRes, mRes, eRes, aRes] = await Promise.all([
+          supabaseClient.from('tournaments').select('*').eq('id', 'friends-cup-1').maybeSingle(),
+          supabaseClient.from('registrations').select('*').order('created_at', { ascending: true }),
+          supabaseClient.from('matches').select('*').order('round_order', { ascending: true }).order('match_number', { ascending: true }),
+          supabaseClient.from('expenses').select('*').order('created_at', { ascending: false }),
+          supabaseClient.from('announcements').select('*').order('pinned', { ascending: false }).order('created_at', { ascending: false })
+        ]);
+
+        if (tRes.error) throw tRes.error;
+        if (tRes.data) state.tournament = tRes.data;
+        if (rRes.data) state.registrations = rRes.data;
+        if (mRes.data) state.matches = mRes.data;
+        if (eRes.data) state.expenses = eRes.data;
+        if (aRes.data) state.announcements = aRes.data;
+        renderAll();
+      }
+
+      function updateConnectionBanner() {
+        const banner = document.getElementById('connectionBanner');
+        const dot = document.getElementById('statusDot');
+        const text = document.getElementById('statusText');
+        const refreshBtn = document.getElementById('refreshCloudBtn');
+
+        if (isCloudConnected) {
+          banner.className = 'bg-emerald-950/90 border-b border-emerald-500/30 px-3 py-2 text-xs text-emerald-200';
+          dot.className = 'inline-block w-2.5 h-2.5 rounded-full bg-emerald-400';
+          text.innerHTML = '<strong>Status: Connected to Live Supabase Database</strong> (Shared real-time tournament data across phones)';
+          refreshBtn.classList.remove('hidden');
+        } else {
+          banner.className = 'bg-amber-950/90 border-b border-amber-500/30 px-3 py-2 text-xs text-amber-200';
+          dot.className = 'inline-block w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse';
+          text.innerHTML = '<strong>Status: Local Preview Mode</strong> (Not deployed/connected to Supabase yet — test all features right here)';
+          refreshBtn.classList.add('hidden');
+        }
+      }
+
+      function updateAdminAuthUI(emailLabel) {
+        const gate = document.getElementById('adminLoginGate');
+        const workspace = document.getElementById('adminWorkspace');
+        const logoutBtn = document.getElementById('adminLogoutBtn');
+        const sub = document.getElementById('adminAuthStatusSub');
+
+        if (isAdminUnlocked) {
+          gate.classList.add('hidden');
+          workspace.classList.remove('hidden');
+          logoutBtn.classList.remove('hidden');
+          sub.textContent = emailLabel
+            ? 'Signed in as Organiser (' + emailLabel + ')'
+            : 'Unlocked in Local Preview Test Mode — full organiser controls active.';
+        } else {
+          gate.classList.remove('hidden');
+          workspace.classList.add('hidden');
+          logoutBtn.classList.add('hidden');
+          sub.textContent = 'Only the authorised tournament organiser can approve players, record ₹20 payments, generate fixtures, or enter match scores.';
+        }
+      }
+
+      // Compute Financial Metrics (Strict Separation of Collected Fees vs Prize Pool vs Expenses vs Net Remainder)
+      function computeFinancials() {
+        const fee = Number(state.tournament.entry_fee || 20);
+        const prizePool = Number(state.tournament.prize_pool_total || 100);
+        const prizePaidOut = Number(state.tournament.prize_paid_out || 0);
+
+        const totalReg = state.registrations.length;
+        const approvedCount = state.registrations.filter(function (r) { return r.approval_status === 'approved'; }).length;
+        const pendingCount = state.registrations.filter(function (r) { return r.approval_status === 'pending'; }).length;
+        const rejectedCount = state.registrations.filter(function (r) { return r.approval_status === 'rejected'; }).length;
+
+        const paidPlayers = state.registrations.filter(function (r) { return r.payment_status === 'paid'; });
+        const unpaidPlayers = state.registrations.filter(function (r) { return r.payment_status !== 'paid' && r.approval_status !== 'rejected'; });
+
+        const paidCount = paidPlayers.length;
+        const unpaidCount = unpaidPlayers.length;
+        const collectedMoney = paidCount * fee;
+        const uncollectedMoney = unpaidCount * fee;
+
+        const totalExpenses = state.expenses.reduce(function (sum, item) {
+          return sum + Number(item.amount || 0);
+        }, 0);
+
+        // Estimated Remaining Balance = Actual Money Collected - Fixed Prize Pool (₹100) - Expenses
+        const estimatedRemainder = collectedMoney - prizePool - totalExpenses;
+        const cashCurrentlyInHand = collectedMoney - prizePaidOut - totalExpenses;
+
+        return {
+          fee: fee,
+          prizePool: prizePool,
+          prizePaidOut: prizePaidOut,
+          totalReg: totalReg,
+          approvedCount: approvedCount,
+          pendingCount: pendingCount,
+          rejectedCount: rejectedCount,
+          paidCount: paidCount,
+          unpaidCount: unpaidCount,
+          collectedMoney: collectedMoney,
+          uncollectedMoney: uncollectedMoney,
+          totalExpenses: totalExpenses,
+          estimatedRemainder: estimatedRemainder,
+          cashCurrentlyInHand: cashCurrentlyInHand
+        };
+      }
+
+      // Determine Podium Winners from Final & Third-Place Playoff Matches
+      function computePodium() {
+        let champion = 'TBD (Final Winner)';
+        let runnerUp = 'TBD (Final Runner-Up)';
+        let thirdPlace = 'TBD (3rd Playoff Winner)';
+
+        const finalMatch = state.matches.find(function (m) { return m.round_name === 'Final'; });
+        if (finalMatch && finalMatch.status === 'completed' && finalMatch.winner_name) {
+          champion = finalMatch.winner_name;
+          runnerUp = finalMatch.winner_name === finalMatch.player1_name
+            ? finalMatch.player2_name
+            : finalMatch.player1_name;
+        }
+
+        const thirdMatch = state.matches.find(function (m) { return m.round_name === 'Third-Place Playoff'; });
+        if (thirdMatch && thirdMatch.status === 'completed' && thirdMatch.winner_name) {
+          thirdPlace = thirdMatch.winner_name;
+        }
+
+        return { champion: champion, runnerUp: runnerUp, thirdPlace: thirdPlace };
+      }
+
+      // Render Top Ribbon & Header
+      function renderHeaderAndRibbon() {
+        const fin = computeFinancials();
+        document.getElementById('headerTitle').textContent = state.tournament.name;
+        document.getElementById('headerSubtitle').textContent = state.tournament.subtitle;
+        document.getElementById('upiPaymentNote').textContent = state.tournament.upi_note;
+
+        const regBadge = document.getElementById('regStatusBadge');
+        const submitBtn = document.getElementById('submitRegBtn');
+        const toggleRegBtn = document.getElementById('toggleRegOpenBtn');
+
+        if (state.tournament.registration_open) {
+          regBadge.textContent = 'Registration Open';
+          regBadge.className = 'px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Tournament Registration (₹20 Entry)';
+          submitBtn.className = 'w-full py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-lg transition';
+          if (toggleRegBtn) {
+            toggleRegBtn.textContent = 'Registration: OPEN (Tap to Close)';
+            toggleRegBtn.className = 'px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-xs font-bold text-emerald-300';
+          }
+        } else {
+          regBadge.textContent = 'Closed';
+          regBadge.className = 'px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 shrink-0';
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Registration Closed by Organiser';
+          submitBtn.className = 'w-full py-3 px-4 rounded-xl bg-slate-800 text-slate-500 font-bold text-sm cursor-not-allowed';
+          if (toggleRegBtn) {
+            toggleRegBtn.textContent = 'Registration: CLOSED (Tap to Open)';
+            toggleRegBtn.className = 'px-3 py-1.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-xs font-bold text-rose-300';
+          }
+        }
+
+        document.getElementById('ribbonApprovedCount').textContent = fin.approvedCount;
+        document.getElementById('ribbonPendingCount').textContent = fin.pendingCount + ' pending';
+        document.getElementById('ribbonCollectedAmount').textContent = '₹' + fin.collectedMoney;
+        document.getElementById('ribbonPaidCount').textContent = fin.paidCount + ' paid @ ₹' + fin.fee;
+        document.getElementById('ribbonPrizePool').textContent = '₹' + fin.prizePool;
+
+        const remEl = document.getElementById('ribbonNetRemainder');
+        const remStatusEl = document.getElementById('ribbonNetStatus');
+        const sign = fin.estimatedRemainder >= 0 ? '₹' + fin.estimatedRemainder : '−₹' + Math.abs(fin.estimatedRemainder);
+        remEl.textContent = sign;
+        if (fin.estimatedRemainder > 0) {
+          remEl.className = 'text-xl sm:text-2xl font-extrabold text-emerald-400';
+          remStatusEl.textContent = 'Organiser surplus';
+        } else if (fin.estimatedRemainder === 0) {
+          remEl.className = 'text-xl sm:text-2xl font-extrabold text-sky-400';
+          remStatusEl.textContent = 'Exact break-even';
+        } else {
+          remEl.className = 'text-xl sm:text-2xl font-extrabold text-rose-400';
+          remStatusEl.textContent = 'Shortfall vs ₹100+exp';
+        }
+
+        // Podium
+        const podium = computePodium();
+        document.getElementById('podiumFirst').textContent = podium.champion;
+        document.getElementById('podiumSecond').textContent = podium.runnerUp;
+        document.getElementById('podiumThird').textContent = podium.thirdPlace;
+      }
+
+      // Render Public Announcements & Players
+      function renderPublicHub() {
+        const annList = document.getElementById('announcementsList');
+        const annBadge = document.getElementById('announcementCountBadge');
+        annBadge.textContent = state.announcements.length + (state.announcements.length === 1 ? ' update' : ' updates');
+
+        if (state.announcements.length === 0) {
+          annList.innerHTML = '<div class="text-xs text-slate-500 py-3 text-center">No organiser announcements posted yet.</div>';
+        } else {
+          annList.innerHTML = state.announcements.map(function (a) {
+            return (
+              '<div class="rounded-xl bg-slate-900/90 border ' + (a.pinned ? 'border-emerald-500/40' : 'border-slate-800') + ' p-3.5">' +
+                '<div class="flex items-center justify-between gap-2 mb-1">' +
+                  '<span class="text-xs font-bold text-white">' + esc(a.title) + '</span>' +
+                  (a.pinned ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300">📌 Pinned</span>' : '') +
+                '</div>' +
+                '<p class="text-xs text-slate-300 leading-relaxed">' + esc(a.body) + '</p>' +
+              '</div>'
+            );
+          }).join('');
+        }
+
+        // Players List
+        const listEl = document.getElementById('publicPlayersList');
+        const filtered = state.registrations.filter(function (p) {
+          if (playerFilter === 'approved') return p.approval_status === 'approved';
+          if (playerFilter === 'pending') return p.approval_status === 'pending';
+          return p.approval_status !== 'rejected';
+        });
+
+        if (filtered.length === 0) {
+          listEl.innerHTML = '<div class="rounded-xl bg-slate-900/60 border border-slate-800 p-6 text-center text-xs text-slate-400">No players match this filter yet. Use the registration form to join!</div>';
+          return;
+        }
+
+        listEl.innerHTML = filtered.map(function (p, idx) {
+          const isApproved = p.approval_status === 'approved';
+          const isPaid = p.payment_status === 'paid';
+          return (
+            '<div class="rounded-xl bg-slate-900/90 border border-slate-800 p-3 flex items-center justify-between gap-3">' +
+              '<div class="flex items-center gap-3 min-w-0">' +
+                '<div class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-extrabold text-emerald-400 shrink-0">' +
+                  '#' + (p.seed_number || (idx + 1)) +
+                '</div>' +
+                '<div class="min-w-0">' +
+                  '<div class="text-sm font-bold text-white truncate">' + esc(p.player_name) + '</div>' +
+                  '<div class="text-[11px] text-slate-400 truncate">' +
+                    (p.efootball_id ? 'eFootball ID: <span class="text-slate-300 font-mono">' + esc(p.efootball_id) + '</span>' : 'eFootball ID: Not listed') +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="flex flex-col sm:flex-row items-end sm:items-center gap-1.5 shrink-0">' +
+                '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ' +
+                  (isApproved ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30') + '">' +
+                  esc(p.approval_status) +
+                '</span>' +
+                '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ' +
+                  (isPaid ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700') + '">' +
+                  (isPaid ? '₹20 Paid' : 'Unpaid') +
+                '</span>' +
+              '</div>' +
+            '</div>'
+          );
+        }).join('');
+      }
+
+      // Render Knockout Bracket & Fixtures
+      function renderBracket() {
+        const container = document.getElementById('bracketContainer');
+        if (!state.matches || state.matches.length === 0) {
+          container.innerHTML = '<div class="rounded-xl bg-slate-900/70 border border-slate-800 p-6 text-center text-xs text-slate-400">No knockout fixtures generated yet. The Organiser can generate fixtures in the Organiser Admin tab once players are approved.</div>';
+          return;
+        }
+
+        const roundsOrder = ['Quarter-Finals', 'Semi-Finals', 'Third-Place Playoff', 'Final'];
+        const visibleRounds = roundsOrder.filter(function (rName) {
+          if (roundFilter !== 'all' && rName !== roundFilter) return false;
+          return state.matches.some(function (m) { return m.round_name === rName; });
+        });
+
+        container.innerHTML = visibleRounds.map(function (rName) {
+          const rMatches = state.matches.filter(function (m) { return m.round_name === rName; });
+          const badgeColor = rName === 'Final'
+            ? 'text-amber-300 bg-amber-500/15 border-amber-500/30'
+            : rName === 'Third-Place Playoff'
+            ? 'text-orange-300 bg-orange-500/15 border-orange-500/30'
+            : 'text-emerald-300 bg-emerald-500/15 border-emerald-500/30';
+
+          return (
+            '<div class="space-y-3">' +
+              '<div class="flex items-center justify-between">' +
+                '<span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider border ' + badgeColor + '">' +
+                  esc(rName) +
+                '</span>' +
+                '<span class="text-xs text-slate-400">' + rMatches.length + (rMatches.length === 1 ? ' match' : ' matches') + '</span>' +
+              '</div>' +
+              '<div class="grid grid-cols-1 md:grid-cols-2 gap-3">' +
+                rMatches.map(function (m) {
+                  const isDone = m.status === 'completed';
+                  const p1Won = isDone && m.winner_name === m.player1_name;
+                  const p2Won = isDone && m.winner_name === m.player2_name;
+                  const penText = (m.pen1 != null && m.pen2 != null) ? ' (PEN ' + m.pen1 + '-' + m.pen2 + ')' : '';
+
+                  return (
+                    '<div class="rounded-xl bg-slate-900/95 border ' + (isDone ? 'border-emerald-500/40' : 'border-slate-800') + ' p-3.5 space-y-2.5">' +
+                      '<div class="flex items-center justify-between text-[11px] text-slate-400">' +
+                        '<span class="font-mono font-bold text-slate-300">' + esc(m.id) + '</span>' +
+                        '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ' +
+                          (isDone ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-400') + '">' +
+                          (isDone ? 'Full Time' + esc(penText) : 'Upcoming') +
+                        '</span>' +
+                      '</div>' +
+                      '<div class="space-y-1.5">' +
+                        '<div class="flex items-center justify-between px-3 py-2 rounded-lg ' + (p1Won ? 'bg-emerald-500/20 border border-emerald-500/40 font-extrabold text-white' : 'bg-slate-950/80 text-slate-300') + '">' +
+                          '<span class="text-xs sm:text-sm truncate">' + esc(m.player1_name) + (p1Won ? ' ✓' : '') + '</span>' +
+                          '<span class="text-sm font-black">' + (m.score1 != null ? m.score1 : '—') + '</span>' +
+                        '</div>' +
+                        '<div class="flex items-center justify-between px-3 py-2 rounded-lg ' + (p2Won ? 'bg-emerald-500/20 border border-emerald-500/40 font-extrabold text-white' : 'bg-slate-950/80 text-slate-300') + '">' +
+                          '<span class="text-xs sm:text-sm truncate">' + esc(m.player2_name) + (p2Won ? ' ✓' : '') + '</span>' +
+                          '<span class="text-sm font-black">' + (m.score2 != null ? m.score2 : '—') + '</span>' +
+                        '</div>' +
+                      '</div>' +
+                      '<div class="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-800/80">' +
+                        '<span>' +
+                          (m.next_match_id ? 'Winner → <strong class="text-slate-300">' + esc(m.next_match_id) + '</strong>' : (rName === 'Final' ? '🏆 Decides ₹70 & ₹20' : '🥉 Decides ₹10 3rd Prize')) +
+                        '</span>' +
+                        (isAdminUnlocked
+                          ? '<button type="button" data-edit-match="' + esc(m.id) + '" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold text-[11px]">Enter Score</button>'
+                          : '') +
+                      '</div>' +
+                    '</div>'
+                  );
+                }).join('') +
+              '</div>' +
+            '</div>'
+          );
+        }).join('');
+      }
+
+      // Render Financial Dashboard
+      function renderFinancials() {
+        const fin = computeFinancials();
+        document.getElementById('formulaCollected').textContent = '₹' + fin.collectedMoney;
+        document.getElementById('formulaCollectedSub').textContent = fin.paidCount + ' paid × ₹' + fin.fee;
+        document.getElementById('formulaPrizePool').textContent = '₹' + fin.prizePool;
+        document.getElementById('formulaExpenses').textContent = '₹' + fin.totalExpenses;
+        document.getElementById('formulaExpensesSub').textContent = state.expenses.length + (state.expenses.length === 1 ? ' item' : ' items');
+
+        const remText = fin.estimatedRemainder >= 0 ? '₹' + fin.estimatedRemainder : '−₹' + Math.abs(fin.estimatedRemainder);
+        const formulaRemEl = document.getElementById('formulaRemainder');
+        const formulaRemTag = document.getElementById('formulaRemainderTag');
+        formulaRemEl.textContent = remText;
+
+        if (fin.estimatedRemainder > 0) {
+          formulaRemEl.className = 'text-xl font-black text-emerald-400 mt-0.5';
+          formulaRemTag.textContent = 'Organiser Surplus';
+        } else if (fin.estimatedRemainder === 0) {
+          formulaRemEl.className = 'text-xl font-black text-sky-300 mt-0.5';
+          formulaRemTag.textContent = 'Exact Break-Even';
+        } else {
+          formulaRemEl.className = 'text-xl font-black text-rose-400 mt-0.5';
+          formulaRemTag.textContent = 'Organiser Deficit';
+        }
+
+        document.getElementById('finTotalReg').textContent = fin.totalReg + ' players';
+        document.getElementById('finApprovalSplit').textContent = fin.approvedCount + ' Appr / ' + fin.pendingCount + ' Pend / ' + fin.rejectedCount + ' Rej';
+        document.getElementById('finPaidEntries').textContent = fin.paidCount + ' players (₹' + fin.collectedMoney + ')';
+        document.getElementById('finUnpaidEntries').textContent = fin.unpaidCount + ' players (₹' + fin.uncollectedMoney + ' pending)';
+        document.getElementById('finPrizeDisbursed').textContent = '₹' + fin.prizePaidOut + ' paid of ₹' + fin.prizePool;
+        document.getElementById('finTotalOutflow').textContent = '₹' + (fin.prizePool + fin.totalExpenses) + ' (₹100 Pool + ₹' + fin.totalExpenses + ' Exp)';
+        document.getElementById('finCashInHand').textContent = '₹' + fin.cashCurrentlyInHand;
+        document.getElementById('finEstimatedRemainder').textContent = remText;
+
+        const expListEl = document.getElementById('publicExpenseList');
+        if (state.expenses.length === 0) {
+          expListEl.innerHTML = '<div class="rounded-xl bg-slate-900/60 border border-slate-800 p-3 text-xs text-slate-400">No organiser expenses logged yet (₹0).</div>';
+        } else {
+          expListEl.innerHTML = state.expenses.map(function (e) {
+            return (
+              '<div class="rounded-xl bg-slate-900/90 border border-slate-800 px-3.5 py-2.5 flex items-center justify-between text-xs">' +
+                '<span class="font-semibold text-slate-200">' + esc(e.title) + '</span>' +
+                '<span class="font-bold text-rose-400">−₹' + Number(e.amount || 0) + '</span>' +
+              '</div>'
+            );
+          }).join('');
+        }
+      }
+
+      // Render Organiser Admin Controls
+      function renderAdminPanel() {
+        const prizeSelect = document.getElementById('prizePaidOutSelect');
+        if (prizeSelect) prizeSelect.value = String(state.tournament.prize_paid_out || 0);
+
+        // 1. Admin Players List
+        const adminPlayersEl = document.getElementById('adminPlayersTable');
+        if (state.registrations.length === 0) {
+          adminPlayersEl.innerHTML = '<div class="text-xs text-slate-400 py-4 text-center">No players registered yet.</div>';
+        } else {
+          adminPlayersEl.innerHTML = state.registrations.map(function (p) {
+            const isApproved = p.approval_status === 'approved';
+            const isRejected = p.approval_status === 'rejected';
+            const isPaid = p.payment_status === 'paid';
+
+            return (
+              '<div class="rounded-xl bg-slate-900/95 border border-slate-800 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">' +
+                '<div class="min-w-0">' +
+                  '<div class="flex items-center gap-2">' +
+                    '<span class="text-sm font-bold text-white truncate">' + esc(p.player_name) + '</span>' +
+                    '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ' +
+                      (isApproved ? 'bg-emerald-500/20 text-emerald-300' : isRejected ? 'bg-rose-500/20 text-rose-300' : 'bg-amber-500/20 text-amber-300') + '">' +
+                      esc(p.approval_status) +
+                    '</span>' +
+                  '</div>' +
+                  '<div class="text-[11px] text-slate-400 mt-0.5">' +
+                    (p.efootball_id ? 'ID: ' + esc(p.efootball_id) + ' • ' : '') +
+                    (p.contact_note ? esc(p.contact_note) : 'No note') +
+                  '</div>' +
+                '</div>' +
+                '<div class="flex flex-wrap items-center gap-1.5 shrink-0">' +
+                  '<button type="button" data-action="approve" data-id="' + esc(p.id) + '" class="px-2.5 py-1.5 rounded-lg text-xs font-bold ' +
+                    (isApproved ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 hover:bg-slate-700 text-slate-200') + '">' +
+                    '✓ Approve' +
+                  '</button>' +
+                  '<button type="button" data-action="reject" data-id="' + esc(p.id) + '" class="px-2.5 py-1.5 rounded-lg text-xs font-bold ' +
+                    (isRejected ? 'bg-rose-500 text-slate-950' : 'bg-slate-800 hover:bg-slate-700 text-slate-200') + '">' +
+                    '✕ Reject' +
+                  '</button>' +
+                  '<button type="button" data-action="toggle-paid" data-id="' + esc(p.id) + '" class="px-2.5 py-1.5 rounded-lg text-xs font-extrabold ' +
+                    (isPaid ? 'bg-sky-400 text-slate-950' : 'bg-amber-500/20 border border-amber-500/40 text-amber-300') + '">' +
+                    (isPaid ? '₹20 Paid ✓' : 'Mark ₹20 Paid') +
+                  '</button>' +
+                  '<button type="button" data-action="delete-player" data-id="' + esc(p.id) + '" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-950 text-rose-300 text-xs font-bold" title="Delete Entry">' +
+                    '🗑' +
+                  '</button>' +
+                '</div>' +
+              '</div>'
+            );
+          }).join('');
+        }
+
+        // 2. Admin Matches List
+        const adminMatchesEl = document.getElementById('adminMatchesList');
+        if (!state.matches || state.matches.length === 0) {
+          adminMatchesEl.innerHTML = '<div class="text-xs text-slate-400 py-3 text-center">No fixtures generated yet. Select bracket size above and tap "Generate Knockout Fixtures".</div>';
+        } else {
+          adminMatchesEl.innerHTML = state.matches.map(function (m) {
+            const isDone = m.status === 'completed';
+            const penInfo = (m.pen1 != null && m.pen2 != null) ? ' (PEN ' + m.pen1 + '-' + m.pen2 + ')' : '';
+            return (
+              '<div class="rounded-xl bg-slate-900 border border-slate-800 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">' +
+                '<div>' +
+                  '<div class="text-[11px] font-bold text-emerald-400">' + esc(m.id) + ' • ' + esc(m.round_name) + '</div>' +
+                  '<div class="text-xs sm:text-sm font-bold text-white mt-0.5">' +
+                    esc(m.player1_name) + ' <span class="text-emerald-400 px-1">' +
+                    (m.score1 != null ? m.score1 : '—') + ' : ' + (m.score2 != null ? m.score2 : '—') +
+                    '</span> ' + esc(m.player2_name) + esc(penInfo) +
+                  '</div>' +
+                '</div>' +
+                '<div class="flex items-center gap-2 self-end sm:self-center">' +
+                  (isDone ? '<span class="text-[11px] text-emerald-300 font-semibold">Winner: ' + esc(m.winner_name) + '</span>' : '') +
+                  '<button type="button" data-edit-match="' + esc(m.id) + '" class="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs">' +
+                    (isDone ? 'Edit Score' : 'Enter Score') +
+                  '</button>' +
+                '</div>' +
+              '</div>'
+            );
+          }).join('');
+        }
+
+        // 3. Admin Expenses List
+        const adminExpEl = document.getElementById('adminExpenseList');
+        if (state.expenses.length === 0) {
+          adminExpEl.innerHTML = '<div class="text-xs text-slate-500">No expenses recorded.</div>';
+        } else {
+          adminExpEl.innerHTML = state.expenses.map(function (e) {
+            return (
+              '<div class="rounded-lg bg-slate-900 border border-slate-800 px-3 py-2 flex items-center justify-between text-xs">' +
+                '<span class="text-slate-200">' + esc(e.title) + ' (<strong>₹' + Number(e.amount || 0) + '</strong>)</span>' +
+                '<button type="button" data-delete-expense="' + esc(e.id) + '" class="text-rose-400 hover:text-rose-300 font-bold">Remove</button>' +
+              '</div>'
+            );
+          }).join('');
+        }
+
+        // 4. Admin Announcements List & Tournament Settings Inputs
+        const nameSettingEl = document.getElementById('settingTournamentName');
+        const upiSettingEl = document.getElementById('settingUpiNote');
+        if (nameSettingEl && document.activeElement !== nameSettingEl) {
+          nameSettingEl.value = state.tournament.name || '';
+        }
+        if (upiSettingEl && document.activeElement !== upiSettingEl) {
+          upiSettingEl.value = state.tournament.upi_note || '';
+        }
+
+        const adminAnnEl = document.getElementById('adminAnnouncementsList');
+        if (adminAnnEl) {
+          if (state.announcements.length === 0) {
+            adminAnnEl.innerHTML = '<div class="text-xs text-slate-500">No updates posted yet.</div>';
+          } else {
+            adminAnnEl.innerHTML = state.announcements.map(function (a) {
+              return (
+                '<div class="rounded-lg bg-slate-900 border border-slate-800 p-2.5 flex items-start justify-between gap-2 text-xs">' +
+                  '<div class="min-w-0">' +
+                    '<div class="font-bold text-white truncate">' + (a.pinned ? '📌 ' : '') + esc(a.title) + '</div>' +
+                    '<div class="text-[11px] text-slate-400 line-clamp-1">' + esc(a.body) + '</div>' +
+                  '</div>' +
+                  '<div class="flex items-center gap-1.5 shrink-0">' +
+                    '<button type="button" data-edit-ann="' + esc(a.id) + '" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold text-[11px]">Edit</button>' +
+                    '<button type="button" data-delete-ann="' + esc(a.id) + '" class="px-2 py-1 rounded bg-slate-800 hover:bg-rose-950 text-rose-400 font-bold text-[11px]">Delete</button>' +
+                  '</div>' +
+                '</div>'
+              );
+            }).join('');
+          }
+        }
+      }
+
+      function renderAll() {
+        renderHeaderAndRibbon();
+        renderPublicHub();
+        renderBracket();
+        renderFinancials();
+        renderAdminPanel();
+      }
+
+      // ===================================================================
+      // MUTATION HANDLERS (CLOUD SUPABASE OR LOCAL FALLBACK)
+      // ===================================================================
+
+      // 1. Public Player Registration
+      document.getElementById('playerRegForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (!state.tournament.registration_open) {
+          showToast('Registration is currently closed by the organiser.', 'error');
+          return;
+        }
+        const nameInput = document.getElementById('regPlayerName');
+        const efInput = document.getElementById('regEfootballId');
+        const noteInput = document.getElementById('regContactNote');
+
+        const playerName = nameInput.value.trim();
+        const efId = efInput.value.trim();
+        const contactNote = noteInput.value.trim();
+
+        if (playerName.length < 2) {
+          showToast('Please enter a valid Player Name (at least 2 characters).', 'error');
+          return;
+        }
+
+        const newReg = {
+          id: 'p-' + Date.now(),
+          player_name: playerName,
+          efootball_id: efId,
+          contact_note: contactNote,
+          approval_status: 'pending',
+          payment_status: 'unpaid',
+          amount_paid: 0,
+          seed_number: null,
+          created_at: new Date().toISOString()
+        };
+
+        if (isCloudConnected && supabaseClient) {
+          const { error } = await supabaseClient.from('registrations').insert([{
+            player_name: newReg.player_name,
+            efootball_id: newReg.efootball_id,
+            contact_note: newReg.contact_note,
+            approval_status: 'pending',
+            payment_status: 'unpaid',
+            amount_paid: 0
+          }]);
+          if (error) {
+            showToast('Supabase Error: ' + error.message, 'error');
+            return;
+          }
+          await syncFromSupabase();
+        } else {
+          state.registrations.push(newReg);
+          saveLocalState();
+          renderAll();
+        }
+
+        nameInput.value = '';
+        efInput.value = '';
+        noteInput.value = '';
+        playerFilter = 'all';
+        updatePlayerFilterButtons();
+        renderPublicHub();
+        showToast('Registration submitted! Status: Pending Organiser Approval.', 'ok');
+      });
+
+      // 2. Admin Quick Add Player
+      document.getElementById('openQuickAddPlayerBtn').addEventListener('click', function () {
+        const form = document.getElementById('adminQuickAddForm');
+        form.classList.toggle('hidden');
+      });
+
+      document.getElementById('adminQuickAddForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const name = document.getElementById('adminAddName').value.trim();
+        const efId = document.getElementById('adminAddEfId').value.trim();
+        const paidMode = document.getElementById('adminAddPaid').value;
+        if (!name) return;
+
+        const isPaid = paidMode === 'paid';
+        const newEntry = {
+          id: 'p-' + Date.now(),
+          player_name: name,
+          efootball_id: efId,
+          contact_note: 'Added by Organiser',
+          approval_status: 'approved',
+          payment_status: isPaid ? 'paid' : 'unpaid',
+          amount_paid: isPaid ? 20 : 0,
+          seed_number: state.registrations.filter(function (r) { return r.approval_status === 'approved'; }).length + 1,
+          created_at: new Date().toISOString()
+        };
+
+        if (isCloudConnected && supabaseClient) {
+          const { error } = await supabaseClient.from('registrations').insert([{
+            player_name: newEntry.player_name,
+            efootball_id: newEntry.efootball_id,
+            contact_note: newEntry.contact_note,
+            approval_status: newEntry.approval_status,
+            payment_status: newEntry.payment_status,
+            amount_paid: newEntry.amount_paid,
+            seed_number: newEntry.seed_number
+          }]);
+          if (error) {
+            showToast('Admin Error: ' + error.message, 'error');
+            return;
+          }
+          await syncFromSupabase();
+        } else {
+          state.registrations.push(newEntry);
+          saveLocalState();
+          renderAll();
+        }
+
+        document.getElementById('adminAddName').value = '';
+        document.getElementById('adminAddEfId').value = '';
+        showToast('Added ' + name + ' to roster.', 'ok');
+      });
+
+      // 3. Admin Player Actions (Approve, Reject, Toggle ₹20 Paid, Delete)
+      document.getElementById('adminPlayersTable').addEventListener('click', async function (e) {
+        const btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+        const action = btn.getAttribute('data-action');
+        const id = btn.getAttribute('data-id');
+        const player = state.registrations.find(function (r) { return String(r.id) === String(id); });
+        if (!player) return;
+
+        if (action === 'delete-player') {
+          if (isCloudConnected && supabaseClient) {
+            const { error } = await supabaseClient.from('registrations').delete().eq('id', id);
+            if (error) return showToast(error.message, 'error');
+            await syncFromSupabase();
+          } else {
+            state.registrations = state.registrations.filter(function (r) { return String(r.id) !== String(id); });
+            saveLocalState();
+            renderAll();
+          }
+          showToast('Player entry removed.', 'warn');
+          return;
+        }
+
+        let updates = {};
+        if (action === 'approve') {
+          updates.approval_status = 'approved';
+          if (!player.seed_number) {
+            updates.seed_number = state.registrations.filter(function (r) { return r.approval_status === 'approved'; }).length + 1;
+          }
+        } else if (action === 'reject') {
+          updates.approval_status = 'rejected';
+        } else if (action === 'toggle-paid') {
+          const nextPaid = player.payment_status !== 'paid';
+          updates.payment_status = nextPaid ? 'paid' : 'unpaid';
+          updates.amount_paid = nextPaid ? Number(state.tournament.entry_fee || 20) : 0;
+        }
+
+        if (isCloudConnected && supabaseClient) {
+          const { error } = await supabaseClient.from('registrations').update(updates).eq('id', id);
+          if (error) return showToast('Update blocked: ' + error.message, 'error');
+          await syncFromSupabase();
+        } else {
+          Object.assign(player, updates);
+          saveLocalState();
+          renderAll();
+        }
+        showToast('Updated ' + player.player_name + '.', 'ok');
+      });
+
+      // 4. Generate Knockout Fixtures (Supports 4 or 8 players + Auto BYE advancement)
+      document.getElementById('generateBracketBtn').addEventListener('click', async function () {
+        const size = Number(document.getElementById('bracketSizeSelect').value || 8);
+        const approved = state.registrations.filter(function (r) { return r.approval_status === 'approved'; });
+
+        if (approved.length < 2) {
+          showToast('Approve at least 2 players before generating knockout fixtures.', 'error');
+          return;
+        }
+
+        const seeded = approved.slice(0, size);
+        while (seeded.length < size) {
+          seeded.push({ id: null, player_name: 'BYE' });
+        }
+
+        let newMatches = [];
+        if (size === 4) {
+          // Semi-Finals (1 vs 4, 2 vs 3), 3rd Place Playoff, Final
+          newMatches = [
+            {
+              id: 'SF-1', round_name: 'Semi-Finals', round_order: 2, match_number: 1,
+              player1_id: seeded[0].id, player2_id: seeded[3].id,
+              player1_name: seeded[0].player_name, player2_name: seeded[3].player_name,
+              score1: null, score2: null, pen1: null, pen2: null, status: 'upcoming',
+              winner_id: null, winner_name: null,
+              next_match_id: 'FIN-1', next_match_slot: 1,
+              loser_next_match_id: '3RD-1', loser_next_match_slot: 1
+            },
+            {
+              id: 'SF-2', round_name: 'Semi-Finals', round_order: 2, match_number: 2,
+              player1_id: seeded[1].id, player2_id: seeded[2].id,
+              player1_name: seeded[1].player_name, player2_name: seeded[2].player_name,
+              score1: null, score2: null, pen1: null, pen2: null, status: 'upcoming',
+              winner_id: null, winner_name: null,
+              next_match_id: 'FIN-1', next_match_slot: 2,
+              loser_next_match_id: '3RD-1', loser_next_match_slot: 2
+            },
+            {
+              id: '3RD-1', round_name: 'Third-Place Playoff', round_order: 3, match_number: 1,
+              player1_id: null, player2_id: null,
+              player1_name: 'Loser SF-1', player2_name: 'Loser SF-2',
+              score1: null, score2: null, pen1: null, pen2: null, status: 'upcoming',
+              winner_id: null, winner_name: null,
+              next_match_id: null, next_match_slot: null,
+              loser_next_match_id: null, loser_next_match_slot: null
+            },
+            {
+              id: 'FIN-1', round_name: 'Final', round_order: 4, match_number: 1,
+              player1_id: null, player2_id: null,
+              player1_name: 'Winner SF-1', player2_name: 'Winner SF-2',
+              score1: null, score2: null, pen1: null, pen2: null, status: 'upcoming',
+              winner_id: null, winner_name: null,
+              next_match_id: null, next_match_slot: null,
+              loser_next_match_id: null, loser_next_match_slot: null
+            }
+          ];
+        } else {
+          // 8-Player Bracket: QF-1..4 -> SF-1..2 -> 3RD-1 & FIN-1
+          const pairs = [[0, 7], [3, 4], [1, 6], [2, 5]];
+          pairs.forEach(function (pair, idx) {
+            const p1 = seeded[pair[0]];
+            const p2 = seeded[pair[1]];
+            const qfNum = idx + 1;
+            const sfTarget = idx < 2 ? 'SF-1' : 'SF-2';
+            const sfSlot = (idx % 2) + 1;
+            newMatches.push({
+              id: 'QF-' + qfNum, round_name: 'Quarter-Finals', round_order: 1, match_number: qfNum,
+              player1_id: p1.id, player2_id: p2.id,
+              player1_name: p1.player_name, player2_name: p2.player_name,
+              score1: null, score2: null, pen1: null, pen2: null, status: 'upcoming',
+              winner_id: null, winner_name: null,
+              next_match_id: sfTarget, next_match_slot: sfSlot,
+              loser_next_match_id: null, loser_next_match_slot: null
+            });
+          });
+          newMatches.push(
+            {
+              id: 'SF-1', round_name: 'Semi-Finals', round_order: 2, match_number: 1,
+              player1_id: null, player2_id: null,
+              player1_name: 'Winner QF-1', player2_name: 'Winner QF-2',
+              score1: null, score2: null, pen1: null, pen2: null, status: 'upcoming',
+              winner_id: null, winner_name: null,
+              next_match_id: 'FIN-1', next_match_slot: 1,
+              loser_next_match_id: '3RD-1', loser_next_match_slot: 1
+            },
+            {
+              id: 'SF-2', round_name: 'Semi-Finals', round_order: 2, match_number: 2,
+              player1_id: null, player2_id: null,
+              player1_name: 'Winner QF-3', player2_name: 'Winner QF-4',
+              score1: null, score2: null, pen1: null, pen2: null, status: 'upcoming',
+              winner_id: null, winner_name: null,
+              next_match_id: 'FIN-1', next_match_slot: 2,
+              loser_next_match_id: '3RD-1', loser_next_match_slot: 2
+            },
+            {
+              id: '3RD-1', round_name: 'Third-Place Playoff', round_order: 3, match_number: 1,
+              player1_id: null, player2_id: null,
+              player1_name: 'Loser SF-1', player2_name: 'Loser SF-2',
+              score1: null, score2: null, pen1: null, pen2: null, status: 'upcoming',
+              winner_id: null, winner_name: null,
+              next_match_id: null, next_match_slot: null,
+              loser_next_match_id: null, loser_next_match_slot: null
+            },
+            {
+              id: 'FIN-1', round_name: 'Final', round_order: 4, match_number: 1,
+              player1_id: null, player2_id: null,
+              player1_name: 'Winner SF-1', player2_name: 'Winner SF-2',
+              score1: null, score2: null, pen1: null, pen2: null, status: 'upcoming',
+              winner_id: null, winner_name: null,
+              next_match_id: null, next_match_slot: null,
+              loser_next_match_id: null, loser_next_match_slot: null
+            }
+          );
+        }
+
+        // Auto-advance any first-round BYEs
+        newMatches.forEach(function (m) {
+          if (m.player2_name === 'BYE' && m.player1_name !== 'BYE') {
+            m.score1 = 3;
+            m.score2 = 0;
+            m.status = 'completed';
+            m.winner_id = m.player1_id;
+            m.winner_name = m.player1_name;
+            if (m.next_match_id) {
+              const nextM = newMatches.find(function (nx) { return nx.id === m.next_match_id; });
+              if (nextM) {
+                if (m.next_match_slot === 1) {
+                  nextM.player1_id = m.winner_id;
+                  nextM.player1_name = m.winner_name;
+                } else {
+                  nextM.player2_id = m.winner_id;
+                  nextM.player2_name = m.winner_name;
+                }
+              }
+            }
+          }
+        });
+
+        if (isCloudConnected && supabaseClient) {
+          await supabaseClient.from('matches').delete().neq('id', '');
+          const { error } = await supabaseClient.from('matches').insert(newMatches);
+          if (error) return showToast('Bracket Error: ' + error.message, 'error');
+          await syncFromSupabase();
+        } else {
+          state.matches = newMatches;
+          saveLocalState();
+          renderAll();
+        }
+
+        showToast('Generated ' + size + '-player knockout bracket!', 'ok');
+      });
+
+      // 5. Open Score Modal & Save Match Score with Automatic Winner Advancement
+      function openScoreModal(matchId) {
+        const m = state.matches.find(function (x) { return x.id === matchId; });
+        if (!m) return;
+        document.getElementById('scoreMatchId').value = m.id;
+        document.getElementById('scoreModalRound').textContent = m.id + ' • ' + m.round_name;
+        document.getElementById('scoreModalTitle').textContent = m.player1_name + ' vs ' + m.player2_name;
+        document.getElementById('scoreP1Label').textContent = m.player1_name;
+        document.getElementById('scoreP2Label').textContent = m.player2_name;
+        document.getElementById('scoreP1Input').value = m.score1 != null ? m.score1 : 0;
+        document.getElementById('scoreP2Input').value = m.score2 != null ? m.score2 : 0;
+        document.getElementById('penP1Input').value = m.pen1 != null ? m.pen1 : '';
+        document.getElementById('penP2Input').value = m.pen2 != null ? m.pen2 : '';
+        document.getElementById('scoreModal').classList.remove('hidden');
+      }
+
+      function closeScoreModal() {
+        document.getElementById('scoreModal').classList.add('hidden');
+      }
+
+      document.getElementById('closeScoreModalBtn').addEventListener('click', closeScoreModal);
+      document.getElementById('cancelScoreModalBtn').addEventListener('click', closeScoreModal);
+
+      document.addEventListener('click', function (e) {
+        const editBtn = e.target.closest('button[data-edit-match]');
+        if (editBtn) {
+          openScoreModal(editBtn.getAttribute('data-edit-match'));
+        }
+      });
+
+      document.getElementById('scoreModalForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const matchId = document.getElementById('scoreMatchId').value;
+        const m = state.matches.find(function (x) { return x.id === matchId; });
+        if (!m) return;
+
+        const s1 = Number(document.getElementById('scoreP1Input').value);
+        const s2 = Number(document.getElementById('scoreP2Input').value);
+        const pen1Raw = document.getElementById('penP1Input').value.trim();
+        const pen2Raw = document.getElementById('penP2Input').value.trim();
+        const p1Pen = pen1Raw !== '' ? Number(pen1Raw) : null;
+        const p2Pen = pen2Raw !== '' ? Number(pen2Raw) : null;
+
+        let p1Wins = false;
+        if (s1 > s2) {
+          p1Wins = true;
+        } else if (s2 > s1) {
+          p1Wins = false;
+        } else {
+          if (p1Pen == null || p2Pen == null || p1Pen === p2Pen) {
+            showToast('Knockout matches cannot end in a tie! Enter Penalty Shootout scores to decide the winner.', 'error');
+            return;
+          }
+          p1Wins = p1Pen > p2Pen;
+        }
+
+        const winnerId = p1Wins ? m.player1_id : m.player2_id;
+        const winnerName = p1Wins ? m.player1_name : m.player2_name;
+        const loserId = p1Wins ? m.player2_id : m.player1_id;
+        const loserName = p1Wins ? m.player2_name : m.player1_name;
+
+        m.score1 = s1;
+        m.score2 = s2;
+        m.pen1 = p1Pen;
+        m.pen2 = p2Pen;
+        m.status = 'completed';
+        m.winner_id = winnerId;
+        m.winner_name = winnerName;
+
+        const modifiedMatches = [m];
+
+        // Advance Winner to next round slot
+        if (m.next_match_id) {
+          const nextMatch = state.matches.find(function (nx) { return nx.id === m.next_match_id; });
+          if (nextMatch) {
+            if (m.next_match_slot === 1) {
+              nextMatch.player1_id = winnerId;
+              nextMatch.player1_name = winnerName;
+            } else {
+              nextMatch.player2_id = winnerId;
+              nextMatch.player2_name = winnerName;
+            }
+            modifiedMatches.push(nextMatch);
+          }
+        }
+
+        // Send Semi-Final Loser to Third-Place Playoff
+        if (m.loser_next_match_id) {
+          const loserMatch = state.matches.find(function (lx) { return lx.id === m.loser_next_match_id; });
+          if (loserMatch) {
+            if (m.loser_next_match_slot === 1) {
+              loserMatch.player1_id = loserId;
+              loserMatch.player1_name = loserName;
+            } else {
+              loserMatch.player2_id = loserId;
+              loserMatch.player2_name = loserName;
+            }
+            modifiedMatches.push(loserMatch);
+          }
+        }
+
+        if (isCloudConnected && supabaseClient) {
+          for (let i = 0; i < modifiedMatches.length; i++) {
+            const item = modifiedMatches[i];
+            const { error } = await supabaseClient.from('matches').update({
+              player1_id: item.player1_id,
+              player2_id: item.player2_id,
+              player1_name: item.player1_name,
+              player2_name: item.player2_name,
+              score1: item.score1,
+              score2: item.score2,
+              pen1: item.pen1,
+              pen2: item.pen2,
+              status: item.status,
+              winner_id: item.winner_id,
+              winner_name: item.winner_name
+            }).eq('id', item.id);
+            if (error) {
+              showToast('Supabase update error: ' + error.message, 'error');
+              return;
+            }
+          }
+          await syncFromSupabase();
+        } else {
+          saveLocalState();
+          renderAll();
+        }
+
+        closeScoreModal();
+        showToast('Saved! ' + winnerName + ' advances.', 'ok');
+      });
+
+      // 6. Expense, Prize Payout & Announcement Handlers
+      document.getElementById('prizePaidOutSelect').addEventListener('change', async function (e) {
+        const val = Number(e.target.value || 0);
+        if (isCloudConnected && supabaseClient) {
+          const { error } = await supabaseClient.from('tournaments').update({ prize_paid_out: val }).eq('id', 'friends-cup-1');
+          if (error) return showToast(error.message, 'error');
+          await syncFromSupabase();
+        } else {
+          state.tournament.prize_paid_out = val;
+          saveLocalState();
+          renderAll();
+        }
+        showToast('Updated prize payout status to ₹' + val + '.', 'ok');
+      });
+
+      document.getElementById('addExpenseForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const titleEl = document.getElementById('expenseTitleInput');
+        const amtEl = document.getElementById('expenseAmountInput');
+        const title = titleEl.value.trim();
+        const amount = Number(amtEl.value);
+        if (!title || amount <= 0) return;
+
+        const newExp = {
+          id: 'exp-' + Date.now(),
+          title: title,
+          category: 'Tournament',
+          amount: amount,
+          created_at: new Date().toISOString()
+        };
+
+        if (isCloudConnected && supabaseClient) {
+          const { error } = await supabaseClient.from('expenses').insert([{
+            title: newExp.title,
+            category: newExp.category,
+            amount: newExp.amount
+          }]);
+          if (error) return showToast(error.message, 'error');
+          await syncFromSupabase();
+        } else {
+          state.expenses.unshift(newExp);
+          saveLocalState();
+          renderAll();
+        }
+
+        titleEl.value = '';
+        amtEl.value = '';
+        showToast('Logged ₹' + amount + ' expense.', 'ok');
+      });
+
+      document.getElementById('adminExpenseList').addEventListener('click', async function (e) {
+        const btn = e.target.closest('button[data-delete-expense]');
+        if (!btn) return;
+        const expId = btn.getAttribute('data-delete-expense');
+        if (isCloudConnected && supabaseClient) {
+          const { error } = await supabaseClient.from('expenses').delete().eq('id', expId);
+          if (error) return showToast(error.message, 'error');
+          await syncFromSupabase();
+        } else {
+          state.expenses = state.expenses.filter(function (x) { return String(x.id) !== String(expId); });
+          saveLocalState();
+          renderAll();
+        }
+        showToast('Expense removed.', 'warn');
+      });
+
+      function resetAnnForm() {
+        document.getElementById('annEditIdInput').value = '';
+        document.getElementById('annTitleInput').value = '';
+        document.getElementById('annBodyInput').value = '';
+        document.getElementById('annPinnedInput').checked = false;
+        document.getElementById('submitAnnBtn').textContent = 'Post Update';
+        document.getElementById('cancelAnnEditBtn').classList.add('hidden');
+      }
+
+      document.getElementById('cancelAnnEditBtn').addEventListener('click', resetAnnForm);
+
+      document.getElementById('addAnnouncementForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const editId = document.getElementById('annEditIdInput').value.trim();
+        const titleEl = document.getElementById('annTitleInput');
+        const bodyEl = document.getElementById('annBodyInput');
+        const pinEl = document.getElementById('annPinnedInput');
+        const title = titleEl.value.trim();
+        const body = bodyEl.value.trim();
+        if (!title || !body) return;
+
+        if (editId) {
+          if (isCloudConnected && supabaseClient) {
+            const { error } = await supabaseClient.from('announcements').update({
+              title: title,
+              body: body,
+              pinned: pinEl.checked
+            }).eq('id', editId);
+            if (error) return showToast(error.message, 'error');
+            await syncFromSupabase();
+          } else {
+            const existing = state.announcements.find(function (x) { return String(x.id) === String(editId); });
+            if (existing) {
+              existing.title = title;
+              existing.body = body;
+              existing.pinned = pinEl.checked;
+            }
+            saveLocalState();
+            renderAll();
+          }
+          resetAnnForm();
+          showToast('Updated organiser announcement!', 'ok');
+          return;
+        }
+
+        const newAnn = {
+          id: 'ann-' + Date.now(),
+          title: title,
+          body: body,
+          pinned: pinEl.checked,
+          created_at: new Date().toISOString()
+        };
+
+        if (isCloudConnected && supabaseClient) {
+          const { error } = await supabaseClient.from('announcements').insert([{
+            title: newAnn.title,
+            body: newAnn.body,
+            pinned: newAnn.pinned
+          }]);
+          if (error) return showToast(error.message, 'error');
+          await syncFromSupabase();
+        } else {
+          state.announcements.unshift(newAnn);
+          saveLocalState();
+          renderAll();
+        }
+
+        resetAnnForm();
+        showToast('Posted organiser update!', 'ok');
+      });
+
+      document.getElementById('adminAnnouncementsList').addEventListener('click', async function (e) {
+        const editBtn = e.target.closest('button[data-edit-ann]');
+        if (editBtn) {
+          const annId = editBtn.getAttribute('data-edit-ann');
+          const item = state.announcements.find(function (x) { return String(x.id) === String(annId); });
+          if (!item) return;
+          document.getElementById('annEditIdInput').value = item.id;
+          document.getElementById('annTitleInput').value = item.title;
+          document.getElementById('annBodyInput').value = item.body;
+          document.getElementById('annPinnedInput').checked = Boolean(item.pinned);
+          document.getElementById('submitAnnBtn').textContent = 'Save Changes';
+          document.getElementById('cancelAnnEditBtn').classList.remove('hidden');
+          document.getElementById('annTitleInput').focus();
+          return;
+        }
+
+        const delBtn = e.target.closest('button[data-delete-ann]');
+        if (delBtn) {
+          const annId = delBtn.getAttribute('data-delete-ann');
+          if (isCloudConnected && supabaseClient) {
+            const { error } = await supabaseClient.from('announcements').delete().eq('id', annId);
+            if (error) return showToast(error.message, 'error');
+            await syncFromSupabase();
+          } else {
+            state.announcements = state.announcements.filter(function (x) { return String(x.id) !== String(annId); });
+            saveLocalState();
+            renderAll();
+          }
+          showToast('Announcement deleted.', 'warn');
+        }
+      });
+
+      document.getElementById('tournamentSettingsForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const newName = document.getElementById('settingTournamentName').value.trim();
+        const newUpi = document.getElementById('settingUpiNote').value.trim();
+        if (!newName || !newUpi) return;
+
+        if (isCloudConnected && supabaseClient) {
+          const { error } = await supabaseClient.from('tournaments').update({
+            name: newName,
+            upi_note: newUpi
+          }).eq('id', 'friends-cup-1');
+          if (error) return showToast(error.message, 'error');
+          await syncFromSupabase();
+        } else {
+          state.tournament.name = newName;
+          state.tournament.upi_note = newUpi;
+          saveLocalState();
+          renderAll();
+        }
+        showToast('Saved tournament title & payment instructions!', 'ok');
+      });
+
+      document.getElementById('toggleRegOpenBtn').addEventListener('click', async function () {
+        const nextOpen = !state.tournament.registration_open;
+        if (isCloudConnected && supabaseClient) {
+          const { error } = await supabaseClient.from('tournaments').update({ registration_open: nextOpen }).eq('id', 'friends-cup-1');
+          if (error) return showToast(error.message, 'error');
+          await syncFromSupabase();
+        } else {
+          state.tournament.registration_open = nextOpen;
+          saveLocalState();
+          renderAll();
+        }
+        showToast('Registration is now ' + (nextOpen ? 'OPEN' : 'CLOSED') + '.', 'ok');
+      });
+
+      // 7. Admin Auth & Local Preview Mode Unlock
+      document.getElementById('unlockPreviewAdminBtn').addEventListener('click', function () {
+        if (isCloudConnected) {
+          showToast('Connected to live Supabase DB — please sign in with your Organiser account.', 'warn');
+          return;
+        }
+        isAdminUnlocked = true;
+        updateAdminAuthUI(null);
+        renderAll();
+        showToast('Organiser Console unlocked in Local Preview Mode!', 'ok');
+      });
+
+      document.getElementById('adminLogoutBtn').addEventListener('click', async function () {
+        if (isCloudConnected && supabaseClient) {
+          await supabaseClient.auth.signOut();
+        }
+        isAdminUnlocked = false;
+        updateAdminAuthUI(null);
+        renderAll();
+        showToast('Signed out of Organiser Console.', 'ok');
+      });
+
+      document.getElementById('supabaseAdminLoginForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (!isCloudConnected || !supabaseClient) {
+          showToast('Connect your Supabase Project URL and Anon Key first (or use Option B for Local Preview).', 'warn');
+          return;
+        }
+        const email = document.getElementById('adminEmailInput').value.trim();
+        const password = document.getElementById('adminPasswordInput').value;
+        if (!email || !password) {
+          showToast('Enter both email and password, or tap Sign In with Google.', 'error');
+          return;
+        }
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+        if (error) return showToast('Login failed: ' + error.message, 'error');
+        isAdminUnlocked = true;
+        updateAdminAuthUI(data.user.email);
+        renderAll();
+        showToast('Signed in as ' + data.user.email, 'ok');
+      });
+
+      document.getElementById('googleOAuthLoginBtn').addEventListener('click', async function () {
+        if (!isCloudConnected || !supabaseClient) {
+          showToast('Connect your Supabase URL & Anon Key first to use Google Sign-In.', 'warn');
+          return;
+        }
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: window.location.href }
+        });
+        if (error) showToast('Google OAuth error: ' + error.message, 'error');
+      });
+
+      // 8. Export & WhatsApp Summary Tools
+      function copyTextToClipboard(text, successMsg) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            showToast(successMsg, 'ok');
+          }).catch(function () {
+            fallbackCopy(text, successMsg);
+          });
+        } else {
+          fallbackCopy(text, successMsg);
+        }
+      }
+
+      function fallbackCopy(text, successMsg) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          showToast(successMsg, 'ok');
+        } catch (err) {
+          showToast('Could not copy automatically.', 'error');
+        }
+        document.body.removeChild(ta);
+      }
+
+      document.getElementById('copyWhatsappBtn').addEventListener('click', function () {
+        const fin = computeFinancials();
+        const pod = computePodium();
+        const approvedNames = state.registrations
+          .filter(function (r) { return r.approval_status === 'approved'; })
+          .map(function (r, i) { return (i + 1) + '. ' + r.player_name + (r.payment_status === 'paid' ? ' (₹20 Paid ✅)' : ' (Unpaid ⏳)'); })
+          .join('\n');
+
+        const summary = [
+          '🏆 *' + state.tournament.name + '*',
+          '⚽ Format: Knockout (Own Phone) | Entry: ₹20',
+          '💰 Fixed Prize Pool: ₹100 (🥇 ₹70 | 🥈 ₹20 | 🥉 ₹10)',
+          '',
+          '*Approved Players (' + fin.approvedCount + '):*',
+          approvedNames || 'None yet',
+          '',
+          '*Financial Summary:*',
+          '• Collected Entry Fees: ₹' + fin.collectedMoney + ' (' + fin.paidCount + ' paid)',
+          '• Fixed Prize Pool: ₹' + fin.prizePool,
+          '• Organiser Expenses: ₹' + fin.totalExpenses,
+          '• Est. Organiser Remainder: ₹' + fin.estimatedRemainder,
+          '',
+          '*Current Honours:*',
+          '🥇 1st: ' + pod.champion,
+          '🥈 2nd: ' + pod.runnerUp,
+          '🥉 3rd: ' + pod.thirdPlace
+        ].join('\n');
+
+        copyTextToClipboard(summary, 'WhatsApp summary copied! Paste it into your group chat.');
+      });
+
+      document.getElementById('exportCsvBtn').addEventListener('click', function () {
+        const headers = ['Player Name', 'eFootball ID', 'Approval Status', 'Payment Status', 'Amount Paid (INR)', 'Note'];
+        const rows = state.registrations.map(function (r) {
+          return [
+            '"' + String(r.player_name || '').replace(/"/g, '""') + '"',
+            '"' + String(r.efootball_id || '').replace(/"/g, '""') + '"',
+            r.approval_status,
+            r.payment_status,
+            r.amount_paid,
+            '"' + String(r.contact_note || '').replace(/"/g, '""') + '"'
+          ].join(',');
+        });
+        const csvContent = [headers.join(',')].concat(rows).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'friends_cup_players.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Downloaded friends_cup_players.csv', 'ok');
+      });
+
+      document.getElementById('exportJsonBtn').addEventListener('click', function () {
+        const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'friends_cup_backup.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Downloaded full JSON backup.', 'ok');
+      });
+
+      document.getElementById('resetDemoDataBtn').addEventListener('click', function () {
+        state = getInitialDemoState();
+        saveLocalState();
+        renderAll();
+        showToast('Local preview data reset to initial sample state.', 'ok');
+      });
+
+      // 9. Setup Modal & Cloud Sync Controls
+      document.getElementById('openSetupModalBtn').addEventListener('click', function () {
+        document.getElementById('setupModal').classList.remove('hidden');
+      });
+
+      document.getElementById('closeSetupModalBtn').addEventListener('click', function () {
+        document.getElementById('setupModal').classList.add('hidden');
+      });
+
+      document.getElementById('supabaseConfigForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const url = document.getElementById('cfgSupabaseUrl').value.trim();
+        const key = document.getElementById('cfgSupabaseKey').value.trim();
+        if (!url || !key) {
+          showToast('Please provide both the Supabase Project URL and Anon Public Key.', 'error');
+          return;
+        }
+        try {
+          localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify({ url: url, key: key }));
+        } catch (err) {}
+        await initSupabaseConnection();
+        document.getElementById('setupModal').classList.add('hidden');
+        if (isCloudConnected) {
+          showToast('Connected to live Supabase database!', 'ok');
+        } else {
+          showToast('Could not verify tables — make sure you ran supabase_schema.sql first.', 'error');
+        }
+      });
+
+      document.getElementById('disconnectSupabaseBtn').addEventListener('click', function () {
+        try {
+          localStorage.removeItem(CONFIG_STORAGE_KEY);
+        } catch (err) {}
+        supabaseClient = null;
+        isCloudConnected = false;
+        updateConnectionBanner();
+        loadLocalState();
+        renderAll();
+        document.getElementById('setupModal').classList.add('hidden');
+        showToast('Switched back to Local Preview Mode.', 'ok');
+      });
+
+      document.getElementById('refreshCloudBtn').addEventListener('click', async function () {
+        if (isCloudConnected && supabaseClient) {
+          await syncFromSupabase();
+          showToast('Synced latest tournament data from Supabase.', 'ok');
+        }
+      });
+
+      // 10. Navigation & Filter Tabs
+      function switchTab(tabId) {
+        activeTab = tabId;
+        document.querySelectorAll('.tab-panel').forEach(function (panel) {
+          panel.classList.toggle('hidden', panel.id !== 'tab-' + tabId);
+        });
+        document.querySelectorAll('.nav-tab-btn').forEach(function (btn) {
+          const isMatch = btn.getAttribute('data-tab') === tabId;
+          btn.classList.toggle('active-nav-tab', isMatch);
+          btn.classList.toggle('text-slate-400', !isMatch);
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      document.querySelectorAll('.nav-tab-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          switchTab(btn.getAttribute('data-tab'));
+        });
+      });
+
+      function updatePlayerFilterButtons() {
+        document.querySelectorAll('.player-filter-btn').forEach(function (btn) {
+          const active = btn.getAttribute('data-player-filter') === playerFilter;
+          btn.className = 'player-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold ' +
+            (active ? 'bg-emerald-500/20 text-emerald-300' : 'text-slate-400 hover:text-white');
+        });
+      }
+
+      document.querySelectorAll('.player-filter-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          playerFilter = btn.getAttribute('data-player-filter');
+          updatePlayerFilterButtons();
+          renderPublicHub();
+        });
+      });
+
+      document.querySelectorAll('.round-filter-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          roundFilter = btn.getAttribute('data-round-filter');
+          document.querySelectorAll('.round-filter-btn').forEach(function (b) {
+            const active = b.getAttribute('data-round-filter') === roundFilter;
+            b.className = 'round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold ' +
+              (active ? 'bg-emerald-500/20 text-emerald-300' : 'text-slate-400 hover:text-white');
+          });
+          renderBracket();
+        });
+      });
+
+      // Boot Application
+      loadLocalState();
+      renderAll();
+      initSupabaseConnection();
+    })();
+  </script>
+</body>
+</html>
