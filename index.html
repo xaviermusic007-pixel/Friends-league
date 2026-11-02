@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
@@ -38,38 +38,43 @@
   <style>
     body {
       font-family: 'Outfit', 'Inter', system-ui, sans-serif;
-      background-color: #030407;
-      color: #f3f4f6;
+      background-color: #f8fafc;
+      color: #0f172a;
       overflow-x: hidden;
       background-image:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0, 255, 136, 0.08), transparent 60%),
-        radial-gradient(ellipse 60% 40% at 90% 20%, rgba(0, 240, 255, 0.06), transparent 50%),
-        linear-gradient(180deg, #030407 0%, #080a10 100%);
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(16, 185, 129, 0.08), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 90% 20%, rgba(14, 165, 233, 0.06), transparent 50%),
+        linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
     }
     .font-ewc {
       font-family: 'Rajdhani', 'Outfit', sans-serif;
       letter-spacing: 0.03em;
     }
     .ewc-container {
-      background: #0b0d14;
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+    }
+    .ewc-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05);
     }
     .ewc-input {
-      background: #10131d;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #ffffff;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      color: #0f172a;
       transition: all 0.2s ease;
     }
     .ewc-input:focus {
-      border-color: #00ff88;
-      box-shadow: 0 0 16px rgba(0, 255, 136, 0.25);
+      border-color: #059669;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
       outline: none;
     }
     .active-nav-tab {
-      background: rgba(255, 255, 255, 0.1);
-      color: #00ff88;
-      border-color: rgba(0, 255, 136, 0.4);
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
     }
     input, select, textarea {
       font-size: 16px !important;
@@ -94,12 +99,12 @@
   </div>
 
   <!-- EWC HEADER -->
-  <header class="border-b border-amber-500/20 bg-slate-950/85 sticky top-0 z-30 backdrop-blur-xl">
+  <header class="border-b border-slate-200 bg-white/95 sticky top-0 z-30 backdrop-blur-md shadow-sm">
     <div class="max-w-5xl mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
       <div class="flex items-center gap-3 min-w-0">
         <!-- EWC Gold Trophy Emblem -->
         <div class="relative w-11 h-11 bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 ewc-cut p-[1.5px] shrink-0 shadow-lg shadow-amber-950/60">
-          <div class="w-full h-full bg-slate-950 ewc-cut flex items-center justify-center">
+          <div class="w-full h-full bg-white ewc-cut flex items-center justify-center">
             <svg class="w-6 h-6 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V19H7v2h10v-2h-4v-3.1a5.01 5.01 0 003.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/>
             </svg>
@@ -114,7 +119,7 @@
             <span class="hidden sm:inline-block px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest ewc-cut-sm bg-amber-500 text-slate-950 font-ewc">
               EWC MOBILE
             </span>
-            <h1 id="headerTitle" class="font-ewc text-lg sm:text-xl font-black tracking-wider text-white uppercase truncate">
+            <h1 id="headerTitle" class="font-ewc text-lg sm:text-xl font-black tracking-wider text-slate-900 uppercase truncate">
               Friends Cup eFootball Mobile
             </h1>
             <span id="regStatusBadge" class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-widest rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">
@@ -128,18 +133,18 @@
       </div>
 
       <!-- Desktop Navigation (3 Clean Tabs) -->
-      <nav class="hidden md:flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-2xl border border-slate-800">
+      <nav class="hidden md:flex items-center gap-1.5 bg-slate-100 p-1 rounded-2xl border border-slate-200">
         <button type="button" data-tab="public" class="nav-tab-btn active-nav-tab px-4 py-2 rounded-xl text-xs font-bold border border-transparent transition">
           ⚽ Tournament
         </button>
-        <button type="button" data-tab="bracket" class="nav-tab-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white border border-transparent transition">
+        <button type="button" data-tab="bracket" class="nav-tab-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 border border-transparent transition">
           🏆 Bracket
         </button>
-        <button type="button" data-tab="inbox" class="nav-tab-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white border border-transparent transition flex items-center gap-1.5">
+        <button type="button" data-tab="inbox" class="nav-tab-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 border border-transparent transition flex items-center gap-1.5">
           <span>📬 Inbox</span>
           <span id="navInboxCount" class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-slate-950 font-bold">1</span>
         </button>
-        <button type="button" data-tab="admin" class="nav-tab-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white border border-transparent transition">
+        <button type="button" data-tab="admin" class="nav-tab-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 border border-transparent transition">
           🔒 Organiser
         </button>
       </nav>
@@ -149,43 +154,43 @@
   <!-- MAIN CONTENT CONTAINER -->
   <main class="max-w-5xl mx-auto px-3 sm:px-6 pt-4 space-y-6">
 
-    <!-- EWC QUICK TOURNAMENT METRICS (Clean English) -->
+    <!-- LIGHT TOURNAMENT METRICS (Clean Esports Style) -->
     <section class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
       <!-- 1. Registered Players -->
-      <div class="ewc-card rounded-2xl p-3.5 relative overflow-hidden">
-        <div class="text-[10px] font-bold text-amber-400 uppercase tracking-widest font-ewc">PLAYERS REGISTERED</div>
+      <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm">
+        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-ewc">PLAYERS REGISTERED</div>
         <div class="mt-1 flex items-baseline justify-between">
-          <span id="ribbonApprovedCount" class="font-ewc text-2xl sm:text-3xl font-black text-white">0</span>
-          <span id="ribbonPendingCount" class="text-xs text-amber-300 font-semibold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">0 waiting</span>
+          <span id="ribbonApprovedCount" class="font-ewc text-2xl sm:text-3xl font-black text-slate-900">0</span>
+          <span id="ribbonPendingCount" class="text-xs text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">0 waiting</span>
         </div>
-        <div class="mt-1 text-[11px] text-slate-400">Approved for bracket</div>
+        <div class="mt-1 text-[11px] text-slate-500">Approved for bracket</div>
       </div>
       <!-- 2. Entry Fee -->
-      <div class="ewc-card rounded-2xl p-3.5 relative overflow-hidden">
-        <div class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest font-ewc">ENTRY FEE</div>
+      <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm">
+        <div class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest font-ewc">ENTRY FEE</div>
         <div class="mt-1 flex items-baseline justify-between">
-          <span class="font-ewc text-2xl sm:text-3xl font-black text-emerald-400">₹20</span>
-          <span class="text-xs text-slate-300 font-medium">Per player</span>
+          <span class="font-ewc text-2xl sm:text-3xl font-black text-emerald-600">₹20</span>
+          <span class="text-xs text-slate-600 font-semibold">Per player</span>
         </div>
-        <div class="mt-1 text-[11px] text-slate-400">Via UPI / GPay / Cash</div>
+        <div class="mt-1 text-[11px] text-slate-500">UPI / GPay / Cash</div>
       </div>
       <!-- 3. Fixed Prize Pool -->
-      <div class="ewc-card rounded-2xl p-3.5 relative overflow-hidden">
-        <div class="text-[10px] font-bold text-amber-400 uppercase tracking-widest font-ewc">TOTAL PRIZE POOL</div>
+      <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm">
+        <div class="text-[10px] font-bold text-amber-600 uppercase tracking-widest font-ewc">TOTAL PRIZE POOL</div>
         <div class="mt-1 flex items-baseline justify-between">
-          <span class="font-ewc text-2xl sm:text-3xl font-black text-amber-400">₹100</span>
-          <span class="text-[10px] text-amber-200 font-bold bg-amber-500/20 px-1.5 py-0.5 rounded">Fixed</span>
+          <span class="font-ewc text-2xl sm:text-3xl font-black text-amber-600">₹100</span>
+          <span class="text-[10px] text-amber-800 font-bold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">Fixed</span>
         </div>
-        <div class="mt-1 text-[11px] text-slate-300">1st: ₹70 • 2nd: ₹20 • 3rd: ₹10</div>
+        <div class="mt-1 text-[11px] text-slate-600 font-medium">1st: ₹70 • 2nd: ₹20 • 3rd: ₹10</div>
       </div>
       <!-- 4. Tournament Format -->
-      <div class="ewc-card rounded-2xl p-3.5 relative overflow-hidden">
-        <div class="text-[10px] font-bold text-cyan-400 uppercase tracking-widest font-ewc">MATCH FORMAT</div>
+      <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm">
+        <div class="text-[10px] font-bold text-sky-600 uppercase tracking-widest font-ewc">MATCH FORMAT</div>
         <div class="mt-1 flex items-baseline justify-between">
-          <span class="font-ewc text-xl sm:text-2xl font-black text-white">KNOCKOUT</span>
-          <span class="text-[10px] text-cyan-300 font-bold bg-cyan-500/20 px-1.5 py-0.5 rounded">1v1</span>
+          <span class="font-ewc text-xl sm:text-2xl font-black text-slate-900">KNOCKOUT</span>
+          <span class="text-[10px] text-sky-700 font-bold bg-sky-50 px-1.5 py-0.5 rounded border border-sky-200">1v1</span>
         </div>
-        <div class="mt-1 text-[11px] text-slate-400">Play on your own phone</div>
+        <div class="mt-1 text-[11px] text-slate-500">Play on your own phone</div>
       </div>
     </section>
 
@@ -194,57 +199,57 @@
          =================================================================== -->
     <div id="tab-public" class="tab-panel space-y-6">
 
-      <!-- EWC Style Metallic Prize Podium -->
-      <section class="ewc-card rounded-3xl p-4 sm:p-5 border-amber-500/40 relative overflow-hidden">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-amber-500/20">
+      <!-- Light Style Prize Podium -->
+      <section class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm relative overflow-hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-200">
           <div>
             <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider bg-amber-500 text-slate-950 font-ewc ewc-cut-sm">
+              <span class="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider bg-amber-500 text-white font-ewc rounded">
                 PRIZE DISTRIBUTION
               </span>
-              <span class="text-xs font-bold text-amber-300 uppercase tracking-wider">OFFICIAL REWARDS</span>
+              <span class="text-xs font-bold text-amber-700 uppercase tracking-wider">OFFICIAL REWARDS</span>
             </div>
-            <h2 class="font-ewc text-xl sm:text-2xl font-black text-white uppercase mt-1">
+            <h2 class="font-ewc text-2xl font-black text-slate-900 uppercase mt-1">
               Guaranteed ₹100 Prize Pool
             </h2>
           </div>
-          <span class="text-xs font-bold text-slate-200 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 self-start sm:self-auto">
-            Entry Fee: <strong class="text-emerald-400">₹20 / player</strong>
+          <span class="text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 self-start sm:self-auto">
+            Entry Fee: <strong class="text-emerald-600">₹20 / player</strong>
           </span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <!-- 1st Place (Champion) -->
-          <div class="rounded-2xl bg-gradient-to-b from-amber-500/15 via-slate-900/90 to-slate-950 p-4 border border-amber-400/40 relative overflow-hidden">
+          <div class="rounded-2xl bg-amber-50/60 p-4 border border-amber-200">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-black uppercase tracking-wider text-amber-300 font-ewc">🥇 1ST PLACE (WINNER)</span>
-              <span class="text-[10px] font-bold bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded">CHAMPION</span>
+              <span class="text-xs font-black uppercase tracking-wider text-amber-900 font-ewc">🥇 1ST PLACE (WINNER)</span>
+              <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded">CHAMPION</span>
             </div>
             <div class="flex items-baseline justify-between mt-1">
-              <div id="podiumFirst" class="text-sm font-bold text-white truncate pr-2">TBD (Final Winner)</div>
-              <div class="font-ewc text-2xl font-black text-amber-400">₹70</div>
+              <div id="podiumFirst" class="text-sm font-bold text-slate-800 truncate pr-2">TBD (Final Winner)</div>
+              <div class="font-ewc text-2xl font-black text-amber-600">₹70</div>
             </div>
           </div>
           <!-- 2nd Place (Runner-up) -->
-          <div class="rounded-2xl bg-gradient-to-b from-slate-400/15 via-slate-900/90 to-slate-950 p-4 border border-slate-400/30 relative overflow-hidden">
+          <div class="rounded-2xl bg-slate-50 p-4 border border-slate-200">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-black uppercase tracking-wider text-slate-300 font-ewc">🥈 2ND PLACE</span>
-              <span class="text-[10px] font-bold bg-slate-500/20 text-slate-300 px-2 py-0.5 rounded">RUNNER-UP</span>
+              <span class="text-xs font-black uppercase tracking-wider text-slate-700 font-ewc">🥈 2ND PLACE</span>
+              <span class="text-[10px] font-bold bg-slate-200 text-slate-700 px-2 py-0.5 rounded">RUNNER-UP</span>
             </div>
             <div class="flex items-baseline justify-between mt-1">
-              <div id="podiumSecond" class="text-sm font-bold text-white truncate pr-2">TBD (Runner-up)</div>
-              <div class="font-ewc text-2xl font-black text-slate-200">₹20</div>
+              <div id="podiumSecond" class="text-sm font-bold text-slate-800 truncate pr-2">TBD (Runner-up)</div>
+              <div class="font-ewc text-2xl font-black text-slate-700">₹20</div>
             </div>
           </div>
           <!-- 3rd Place -->
-          <div class="rounded-2xl bg-gradient-to-b from-orange-500/15 via-slate-900/90 to-slate-950 p-4 border border-orange-400/30 relative overflow-hidden">
+          <div class="rounded-2xl bg-orange-50/60 p-4 border border-orange-200">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-black uppercase tracking-wider text-orange-300 font-ewc">🥉 3RD PLACE</span>
-              <span class="text-[10px] font-bold bg-orange-500/20 text-orange-300 px-2 py-0.5 rounded">PLAYOFF</span>
+              <span class="text-xs font-black uppercase tracking-wider text-orange-900 font-ewc">🥉 3RD PLACE</span>
+              <span class="text-[10px] font-bold bg-orange-100 text-orange-800 px-2 py-0.5 rounded">PLAYOFF</span>
             </div>
             <div class="flex items-baseline justify-between mt-1">
-              <div id="podiumThird" class="text-sm font-bold text-white truncate pr-2">TBD (3rd Match)</div>
-              <div class="font-ewc text-2xl font-black text-orange-400">₹10</div>
+              <div id="podiumThird" class="text-sm font-bold text-slate-800 truncate pr-2">TBD (3rd Match)</div>
+              <div class="font-ewc text-2xl font-black text-orange-600">₹10</div>
             </div>
           </div>
         </div>
@@ -256,10 +261,10 @@
         <!-- Left Column: Registration Card -->
         <div class="lg:col-span-5 space-y-6">
           <section class="ewc-container rounded-3xl p-5 sm:p-6 relative overflow-hidden">
-            <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-200">
               <div>
                 <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 font-ewc">OFFICIAL REGISTRATION</span>
-                <h2 class="font-ewc text-2xl font-black text-white uppercase mt-0.5">
+                <h2 class="font-ewc text-2xl font-black text-slate-900 uppercase mt-0.5">
                   Sign Up for Tournament
                 </h2>
                 <p class="text-xs text-slate-400 mt-0.5">Enter your name and WhatsApp number to secure your knockout slot.</p>
@@ -271,7 +276,7 @@
             </div>
 
             <!-- EWC Competitor Pass Preview -->
-            <div class="mb-4 rounded-2xl bg-[#090b12] p-3.5 border border-white/10">
+            <div class="mb-4 rounded-2xl bg-slate-50 p-3.5 border border-slate-200 rounded-2xl">
               <div class="flex items-center justify-between text-[10px] text-emerald-400 font-ewc font-bold uppercase tracking-wider mb-2">
                 <span>EWC COMPETITOR PASS</span>
                 <span class="text-amber-400">● SLOT VERIFICATION</span>
@@ -292,25 +297,23 @@
             </div>
 
             <!-- Verified Payment Instructions Box -->
-            <div class="mb-4 p-3.5 rounded-2xl bg-[#090b12] border border-white/10 text-xs text-slate-300 space-y-2">
+            <div class="mb-4 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-700 space-y-2">
               <div class="flex items-center justify-between">
                 <span class="font-bold text-white text-xs">Entry Fee: ₹20 per player</span>
                 <span class="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">UPI / Cash</span>
               </div>
-              <p id="upiPaymentNote" class="text-xs text-slate-300 leading-relaxed font-normal">
+              <p id="upiPaymentNote" class="text-xs text-slate-700 leading-relaxed font-normal">
                 Pay ₹20 entry fee to the Organiser via UPI / Cash to confirm your slot.
               </p>
-              <div class="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
-                <span class="text-[11px] text-slate-400">Need to talk or send screenshot?</span>
-                <a id="organiserPublicWaLink" href="javascript:void(0)" class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs">
-                  💬 Chat on WhatsApp
-                </a>
+              <div class="pt-2 border-t border-slate-200 text-[11px] text-slate-500 flex items-center justify-between">
+                <span>Organiser verifies payment via your WhatsApp number</span>
+                <span class="font-bold text-emerald-600 font-mono">100% Secure</span>
               </div>
             </div>
 
             <form id="playerRegForm" class="space-y-3.5">
               <div>
-                <label for="regPlayerName" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
+                <label for="regPlayerName" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Player Name / In-Game Name <span class="text-rose-400">*</span>
                 </label>
                 <input
@@ -324,7 +327,7 @@
               </div>
 
               <div>
-                <label for="regWhatsApp" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1 flex items-center justify-between">
+                <label for="regWhatsApp" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1 flex items-center justify-between">
                   <span>WhatsApp Mobile Number <span class="text-rose-400">*</span></span>
                   <span class="text-[10px] text-emerald-400">For payment & room code</span>
                 </label>
@@ -342,7 +345,7 @@
               </div>
 
               <div>
-                <label for="regEfootballId" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1 flex items-center justify-between">
+                <label for="regEfootballId" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1 flex items-center justify-between">
                   <span>eFootball User ID <span class="text-slate-500 font-normal">(Optional)</span></span>
                   <span class="text-[10px] text-slate-400">For friend match</span>
                 </label>
@@ -356,7 +359,7 @@
               </div>
 
               <div>
-                <label for="regContactNote" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
+                <label for="regContactNote" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Payment Details / Note <span class="text-slate-500 font-normal">(Optional)</span>
                 </label>
                 <input
@@ -385,7 +388,7 @@
           </section>
 
           <!-- Simple Rules Card -->
-          <section class="ewc-card rounded-2xl p-4 sm:p-5">
+          <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
             <h2 class="text-base font-bold text-white mb-3">📋 Simple Tournament Rules</h2>
             <ul class="space-y-2 text-xs sm:text-sm text-slate-300">
               <li class="flex items-start gap-2">
@@ -414,22 +417,22 @@
 
         <!-- Right Column: Registered Players Roster -->
         <div class="lg:col-span-7 space-y-6">
-          <section class="ewc-card rounded-3xl p-5 sm:p-6">
+          <section class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-800">
               <div>
                 <span class="text-[10px] font-black uppercase tracking-widest text-amber-400 font-ewc">PLAYER ROSTER</span>
-                <h2 class="font-ewc text-xl sm:text-2xl font-black text-white uppercase mt-0.5">
+                <h2 class="font-ewc text-xl sm:text-2xl font-black text-slate-900 uppercase mt-0.5">
                   Registered Competitors
                 </h2>
               </div>
-              <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 self-start">
+              <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 self-start">
                 <button type="button" data-player-filter="approved" class="player-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300">
                   Approved
                 </button>
-                <button type="button" data-player-filter="pending" class="player-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
+                <button type="button" data-player-filter="pending" class="player-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900">
                   Waiting
                 </button>
-                <button type="button" data-player-filter="all" class="player-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
+                <button type="button" data-player-filter="all" class="player-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900">
                   All
                 </button>
               </div>
@@ -439,7 +442,7 @@
           </section>
 
           <!-- Organiser Announcements -->
-          <section class="ewc-card rounded-2xl p-4 sm:p-5">
+          <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
             <div class="flex items-center justify-between mb-3">
               <h2 class="text-base font-bold text-white">📢 Organiser News & Updates</h2>
               <span id="announcementCountBadge" class="text-xs text-slate-400">1 update</span>
@@ -455,29 +458,29 @@
          TAB 2: FIXTURES & KNOCKOUT BRACKET (#bracket)
          =================================================================== -->
     <div id="tab-bracket" class="tab-panel hidden space-y-6">
-      <section class="ewc-card rounded-3xl p-5 sm:p-6">
+      <section class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-800">
           <div>
             <span class="text-[10px] font-black uppercase tracking-widest text-amber-400 font-ewc">KNOCKOUT DRAW</span>
-            <h2 class="font-ewc text-xl sm:text-2xl font-black text-white uppercase mt-0.5">
+            <h2 class="font-ewc text-xl sm:text-2xl font-black text-slate-900 uppercase mt-0.5">
               Tournament Matches & Bracket
             </h2>
           </div>
           <!-- Round Filter -->
-          <div class="flex flex-wrap items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+          <div class="flex flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
             <button type="button" data-round-filter="all" class="round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300">
               All Rounds
             </button>
-            <button type="button" data-round-filter="Quarter-Finals" class="round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
+            <button type="button" data-round-filter="Quarter-Finals" class="round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900">
               Quarter-Finals
             </button>
-            <button type="button" data-round-filter="Semi-Finals" class="round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
+            <button type="button" data-round-filter="Semi-Finals" class="round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900">
               Semi-Finals
             </button>
-            <button type="button" data-round-filter="Third-Place Playoff" class="round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
+            <button type="button" data-round-filter="Third-Place Playoff" class="round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900">
               3rd Place
             </button>
-            <button type="button" data-round-filter="Final" class="round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
+            <button type="button" data-round-filter="Final" class="round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900">
               Final
             </button>
           </div>
@@ -491,38 +494,38 @@
          TAB 3: INBOX & QUESTIONS (#inbox) — NEW REQUESTED FEATURE!
          =================================================================== -->
     <div id="tab-inbox" class="tab-panel hidden space-y-6">
-      <section class="ewc-card rounded-3xl p-5 sm:p-6">
+      <section class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-800">
           <div>
             <span class="text-[10px] font-black uppercase tracking-widest text-amber-400 font-ewc">HELP & QUESTIONS</span>
-            <h2 class="font-ewc text-xl sm:text-2xl font-black text-white uppercase mt-0.5">
+            <h2 class="font-ewc text-xl sm:text-2xl font-black text-slate-900 uppercase mt-0.5">
               Tournament Inbox & Support
             </h2>
             <p class="text-xs text-slate-400">Have a question about rules, UPI payment, or match room timings? Ask here or chat on WhatsApp.</p>
           </div>
-          <a id="inboxDirectWaBtn" href="javascript:void(0)" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 self-start sm:self-auto shadow-md">
-            <span>💬 Chat on WhatsApp</span>
-          </a>
+          <span class="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 font-bold text-xs self-start sm:self-auto">
+            📬 Live On-Site Help Desk
+          </span>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <!-- Submit a Question Form -->
           <div class="lg:col-span-5 space-y-4">
-            <div class="rounded-2xl bg-slate-950 p-4 border border-slate-800 space-y-3">
+            <div class="rounded-2xl bg-slate-50 p-4 border border-slate-200 rounded-xl space-y-3">
               <h3 class="text-sm font-bold text-white flex items-center gap-2">
                 <span>✉️ Ask a Question to Organiser</span>
               </h3>
               <form id="askQuestionForm" class="space-y-3">
                 <div>
-                  <label for="qSenderName" class="block text-xs font-bold text-slate-300 mb-1">Your Name *</label>
+                  <label for="qSenderName" class="block text-xs font-bold text-slate-700 mb-1">Your Name *</label>
                   <input id="qSenderName" type="text" required maxlength="40" placeholder="e.g. Rahul" class="ewc-input w-full rounded-xl px-3 py-2 text-xs text-white" />
                 </div>
                 <div>
-                  <label for="qSenderPhone" class="block text-xs font-bold text-slate-300 mb-1">WhatsApp Number *</label>
+                  <label for="qSenderPhone" class="block text-xs font-bold text-slate-700 mb-1">WhatsApp Number *</label>
                   <input id="qSenderPhone" type="tel" required maxlength="14" placeholder="10-digit number for reply" class="ewc-input w-full rounded-xl px-3 py-2 text-xs text-white" />
                 </div>
                 <div>
-                  <label for="qMessage" class="block text-xs font-bold text-slate-300 mb-1">Your Question or Issue *</label>
+                  <label for="qMessage" class="block text-xs font-bold text-slate-700 mb-1">Your Question or Issue *</label>
                   <textarea id="qMessage" rows="3" required maxlength="300" placeholder="e.g. How do I join the friend match room? / Sent ₹20 to UPI." class="ewc-input w-full rounded-xl px-3 py-2 text-xs text-white"></textarea>
                 </div>
                 <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black font-ewc text-sm uppercase tracking-wider">
@@ -550,7 +553,7 @@
     <div id="tab-admin" class="tab-panel hidden space-y-6">
 
       <!-- Admin Gate -->
-      <section class="ewc-card rounded-2xl p-4 sm:p-5 border-amber-500/30">
+      <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm border-amber-500/30">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <span class="text-[10px] font-black uppercase tracking-widest text-amber-400 font-ewc">ORGANISER CONSOLE</span>
@@ -594,7 +597,7 @@
       <div id="adminWorkspace" class="hidden space-y-6">
 
         <!-- 1. Player Approvals & 1-Tap WhatsApp Payment Collection -->
-        <section class="ewc-card rounded-2xl p-4 sm:p-5">
+        <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div>
               <h3 class="text-base font-bold text-white">1. Approve Players & Collect ₹20 on WhatsApp</h3>
@@ -620,7 +623,7 @@
         </section>
 
         <!-- 2. Knockout Fixtures Generator & Score Entry -->
-        <section class="ewc-card rounded-2xl p-4 sm:p-5">
+        <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div>
               <h3 class="text-base font-bold text-white">2. Knockout Draw & Enter Scores</h3>
@@ -640,7 +643,7 @@
         </section>
 
         <!-- 3. Organiser Inbox (Player Questions & WhatsApp Reply) -->
-        <section class="ewc-card rounded-2xl p-4 sm:p-5 space-y-3">
+        <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-3">
           <div class="flex items-center justify-between">
             <div>
               <h3 class="text-base font-bold text-white">3. Player Questions Inbox</h3>
@@ -654,7 +657,7 @@
         </section>
 
         <!-- 4. Tournament Updates & WhatsApp Settings -->
-        <section class="ewc-card rounded-2xl p-4 sm:p-5 space-y-4">
+        <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-4">
           <div>
             <h3 class="text-base font-bold text-white">4. Post Update & Set Your WhatsApp Number</h3>
             <p class="text-xs text-slate-400">Keep players updated about match room timings</p>
@@ -702,7 +705,7 @@
         </section>
 
         <!-- 5. Export Summary for WhatsApp -->
-        <section class="ewc-card rounded-2xl p-4 sm:p-5">
+        <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h3 class="text-base font-bold text-white">5. Share Tournament Update on WhatsApp</h3>
@@ -727,23 +730,23 @@
 
   </main>
 
-  <!-- MOBILE BOTTOM NAVIGATION (3 Tabs: Tournament, Bracket, Inbox, Organiser) -->
-  <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-lg border-t border-slate-800 px-2 py-1.5">
+  <!-- MOBILE BOTTOM NAVIGATION (Light Theme, 4 Tabs) -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1.5 shadow-lg">
     <div class="grid grid-cols-4 gap-1 max-w-md mx-auto">
       <button type="button" data-tab="public" class="nav-tab-btn active-nav-tab flex flex-col items-center justify-center py-1.5 rounded-xl border border-transparent text-[11px] font-bold">
         <span class="text-base leading-none mb-0.5">⚽</span>
         <span>Cup</span>
       </button>
-      <button type="button" data-tab="bracket" class="nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl border border-transparent text-slate-400 text-[11px] font-bold">
+      <button type="button" data-tab="bracket" class="nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl border border-transparent text-slate-500 text-[11px] font-bold">
         <span class="text-base leading-none mb-0.5">🏆</span>
         <span>Bracket</span>
       </button>
-      <button type="button" data-tab="inbox" class="nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl border border-transparent text-slate-400 text-[11px] font-bold relative">
+      <button type="button" data-tab="inbox" class="nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl border border-transparent text-slate-500 text-[11px] font-bold relative">
         <span class="text-base leading-none mb-0.5">📬</span>
         <span>Inbox</span>
-        <span id="mobileInboxDot" class="hidden absolute top-1 right-3 w-2 h-2 rounded-full bg-amber-400"></span>
+        <span id="mobileInboxDot" class="hidden absolute top-1 right-3 w-2 h-2 rounded-full bg-amber-500"></span>
       </button>
-      <button type="button" data-tab="admin" class="nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl border border-transparent text-slate-400 text-[11px] font-bold">
+      <button type="button" data-tab="admin" class="nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl border border-transparent text-slate-500 text-[11px] font-bold">
         <span class="text-base leading-none mb-0.5">🔒</span>
         <span>Admin</span>
       </button>
@@ -751,26 +754,26 @@
   </nav>
 
   <!-- SCORE MODAL -->
-  <div id="scoreModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="ewc-card rounded-2xl max-w-md w-full p-5 border-amber-500/40 space-y-4">
+  <div id="scoreModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 border border-slate-200 shadow-2xl space-y-4 text-slate-900">
       <div class="flex items-center justify-between">
         <div>
           <span id="scoreModalRound" class="text-[11px] font-bold uppercase text-amber-400 font-ewc">MATCH SCORE</span>
           <h3 id="scoreModalTitle" class="text-base font-bold text-white">Enter Result</h3>
         </div>
-        <button id="closeScoreModalBtn" type="button" class="text-slate-400 hover:text-white text-sm font-bold px-2 py-1">✕</button>
+        <button id="closeScoreModalBtn" type="button" class="text-slate-600 hover:text-slate-900 text-sm font-bold px-2 py-1">✕</button>
       </div>
 
       <form id="scoreModalForm" class="space-y-4">
         <input id="scoreMatchId" type="hidden" />
         <div class="grid grid-cols-2 gap-3">
-          <div class="rounded-xl bg-slate-950 p-3 border border-slate-800 text-center">
+          <div class="rounded-xl bg-slate-50 p-3 border border-slate-200 rounded-xl text-center">
             <label id="scoreP1Label" for="scoreP1Input" class="block text-xs font-bold text-white truncate mb-2">Player 1</label>
-            <input id="scoreP1Input" type="number" min="0" max="30" required class="w-full text-center text-2xl font-black font-ewc rounded-lg bg-slate-900 border border-slate-700 py-2 text-amber-400" value="0" />
+            <input id="scoreP1Input" type="number" min="0" max="30" required class="w-full text-center text-2xl font-black font-ewc rounded-lg bg-slate-50 border border-slate-300 py-2 text-slate-900 font-bold" value="0" />
           </div>
-          <div class="rounded-xl bg-slate-950 p-3 border border-slate-800 text-center">
+          <div class="rounded-xl bg-slate-50 p-3 border border-slate-200 rounded-xl text-center">
             <label id="scoreP2Label" for="scoreP2Input" class="block text-xs font-bold text-white truncate mb-2">Player 2</label>
-            <input id="scoreP2Input" type="number" min="0" max="30" required class="w-full text-center text-2xl font-black font-ewc rounded-lg bg-slate-900 border border-slate-700 py-2 text-amber-400" value="0" />
+            <input id="scoreP2Input" type="number" min="0" max="30" required class="w-full text-center text-2xl font-black font-ewc rounded-lg bg-slate-50 border border-slate-300 py-2 text-slate-900 font-bold" value="0" />
           </div>
         </div>
 
@@ -869,20 +872,11 @@
       }
 
       function getInitialQuestions() {
-        return [
-          {
-            id: 'q-1',
-            sender_name: 'Sayan',
-            sender_phone: '9831445566',
-            message: 'What time will the Semi-Final match start?',
-            reply: 'Semi-Finals start tonight at 9:30 PM! Organiser will send the Friend Match room code on WhatsApp.',
-            created_at: '2026-11-01T11:00:00Z'
-          }
-        ];
+        return [];
       }
 
       let state = getInitialDemoState();
-      let questions = getInitialQuestions();
+      let questions = [];
       let activeTab = 'public';
       let playerFilter = 'approved';
       let roundFilter = 'all';
@@ -1061,15 +1055,7 @@
         let savedOrgWa = '';
         try { savedOrgWa = localStorage.getItem('friends_cup_org_wa') || ''; } catch (e) {}
 
-        const waLink = document.getElementById('organiserPublicWaLink');
-        const inboxWa = document.getElementById('inboxDirectWaBtn');
-        const defaultMsg = encodeURIComponent('Hi Organiser! I have a question about Friends Cup eFootball Mobile.');
-        const targetUrl = savedOrgWa
-          ? 'https://wa.me/91' + savedOrgWa + '?text=' + defaultMsg
-          : 'https://api.whatsapp.com/send?text=' + defaultMsg;
-
-        if (waLink) { waLink.href = targetUrl; waLink.target = '_blank'; }
-        if (inboxWa) { inboxWa.href = targetUrl; inboxWa.target = '_blank'; }
+        // Direct WhatsApp connect options removed from public UI
 
         const orgWaInput = document.getElementById('settingOrganiserWa');
         if (orgWaInput && savedOrgWa && document.activeElement !== orgWaInput) {
@@ -1097,7 +1083,7 @@
                   '<span class="text-xs font-bold text-white">' + esc(a.title) + '</span>' +
                   (a.pinned ? '<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300">📌 Pinned</span>' : '') +
                 '</div>' +
-                '<p class="text-xs text-slate-300 leading-relaxed">' + esc(a.body) + '</p>' +
+                '<p class="text-xs text-slate-700 leading-relaxed">' + esc(a.body) + '</p>' +
               '</div>'
             );
           }).join('');
@@ -1111,7 +1097,7 @@
         });
 
         if (filtered.length === 0) {
-          listEl.innerHTML = '<div class="rounded-xl bg-slate-950 p-6 text-center text-xs text-slate-400">No players match this filter. Register on the left!</div>';
+          listEl.innerHTML = '<div class="rounded-xl bg-slate-50 p-6 text-center text-xs text-slate-400">No players match this filter. Register on the left!</div>';
           return;
         }
 
@@ -1119,7 +1105,7 @@
           const isApproved = p.approval_status === 'approved';
           const isPaid = p.payment_status === 'paid';
           return (
-            '<div class="rounded-xl bg-slate-950 p-3 border border-slate-800 flex items-center justify-between gap-3">' +
+            '<div class="rounded-xl bg-slate-50 p-3 border border-slate-200 rounded-xl flex items-center justify-between gap-3">' +
               '<div class="flex items-center gap-3 min-w-0">' +
                 '<div class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/25 flex items-center justify-center font-ewc text-xs font-bold text-amber-400 shrink-0">' +
                   '#' + (p.seed_number || (idx + 1)) +
@@ -1149,7 +1135,7 @@
       function renderBracket() {
         const container = document.getElementById('bracketContainer');
         if (!state.matches || state.matches.length === 0) {
-          container.innerHTML = '<div class="rounded-xl bg-slate-950 p-6 text-center text-xs text-slate-400">No knockout fixtures generated yet.</div>';
+          container.innerHTML = '<div class="rounded-xl bg-slate-50 p-6 text-center text-xs text-slate-400">No knockout fixtures generated yet.</div>';
           return;
         }
 
@@ -1221,18 +1207,18 @@
         if (dotEl) dotEl.classList.toggle('hidden', questions.length === 0);
 
         if (questions.length === 0) {
-          feedEl.innerHTML = '<div class="rounded-xl bg-slate-950 p-6 text-center text-xs text-slate-400">No questions posted yet. Have a question? Ask on the left!</div>';
+          feedEl.innerHTML = '<div class="rounded-xl bg-slate-50 p-6 text-center text-xs text-slate-400">No questions posted yet. Have a question? Ask on the left!</div>';
           return;
         }
 
         feedEl.innerHTML = questions.map(function (q) {
           return (
-            '<div class="rounded-2xl bg-slate-950 p-4 border border-slate-800 space-y-2">' +
+            '<div class="rounded-2xl bg-slate-50 p-4 border border-slate-200 rounded-xl space-y-2">' +
               '<div class="flex items-center justify-between text-xs">' +
                 '<span class="font-bold text-white">' + esc(q.sender_name) + '</span>' +
                 '<span class="text-[10px] text-slate-400 font-mono">' + (q.created_at ? q.created_at.slice(0, 10) : '') + '</span>' +
               '</div>' +
-              '<p class="text-xs text-slate-300 leading-relaxed font-medium">Q: ' + esc(q.message) + '</p>' +
+              '<p class="text-xs text-slate-700 leading-relaxed font-medium">Q: ' + esc(q.message) + '</p>' +
               (q.reply
                 ? '<div class="mt-2 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-xs text-amber-200">' +
                     '<strong>Organiser Reply:</strong> ' + esc(q.reply) +
@@ -1950,7 +1936,7 @@
 
       document.getElementById('resetDemoDataBtn').addEventListener('click', function () {
         state = getInitialDemoState();
-        questions = getInitialQuestions();
+        questions = [];
         saveLocalState();
         saveQuestions();
         renderAll();
@@ -1966,7 +1952,7 @@
         document.querySelectorAll('.nav-tab-btn').forEach(function (btn) {
           const isMatch = btn.getAttribute('data-tab') === tabId;
           btn.classList.toggle('active-nav-tab', isMatch);
-          btn.classList.toggle('text-slate-400', !isMatch);
+          btn.classList.toggle('text-slate-500', !isMatch);
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
@@ -1981,7 +1967,7 @@
         document.querySelectorAll('.player-filter-btn').forEach(function (btn) {
           const active = btn.getAttribute('data-player-filter') === playerFilter;
           btn.className = 'player-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold ' +
-            (active ? 'bg-amber-500/20 text-amber-300' : 'text-slate-400 hover:text-white');
+            (active ? 'bg-amber-500/20 text-amber-300' : 'text-slate-600 hover:text-slate-900');
         });
       }
 
@@ -1999,7 +1985,7 @@
           document.querySelectorAll('.round-filter-btn').forEach(function (b) {
             const active = b.getAttribute('data-round-filter') === roundFilter;
             b.className = 'round-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold ' +
-              (active ? 'bg-amber-500/20 text-amber-300' : 'text-slate-400 hover:text-white');
+              (active ? 'bg-amber-500/20 text-amber-300' : 'text-slate-600 hover:text-slate-900');
           });
           renderBracket();
         });
