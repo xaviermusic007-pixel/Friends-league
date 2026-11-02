@@ -37,49 +37,39 @@
   </script>
   <style>
     body {
-      font-family: 'Outfit', 'Inter', sans-serif;
-      background-color: #07090e;
-      color: #f1f5f9;
+      font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+      background-color: #030407;
+      color: #f3f4f6;
       overflow-x: hidden;
       background-image:
-        radial-gradient(ellipse 90% 40% at 50% -10%, rgba(245, 158, 11, 0.12), transparent 70%),
-        radial-gradient(ellipse 60% 40% at 100% 30%, rgba(0, 240, 255, 0.08), transparent 60%),
-        linear-gradient(180deg, #07090e 0%, #0a0d14 100%);
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0, 255, 136, 0.08), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 90% 20%, rgba(0, 240, 255, 0.06), transparent 50%),
+        linear-gradient(180deg, #030407 0%, #080a10 100%);
     }
     .font-ewc {
-      font-family: 'Rajdhani', sans-serif;
-      letter-spacing: 0.04em;
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      letter-spacing: 0.03em;
     }
-    .ewc-cut {
-      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-    }
-    .ewc-cut-sm {
-      clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
-    }
-    .ewc-card {
-      background: linear-gradient(160deg, rgba(18, 23, 34, 0.95) 0%, rgba(10, 13, 20, 0.98) 100%);
-      border: 1px solid rgba(245, 158, 11, 0.2);
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
-    }
-    .ewc-card-subtle {
-      background: linear-gradient(160deg, rgba(14, 18, 27, 0.9) 0%, rgba(8, 11, 16, 0.95) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    .ewc-container {
+      background: #0b0d14;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
     }
     .ewc-input {
-      background: rgba(6, 8, 13, 0.9);
-      border: 1.5px solid rgba(245, 158, 11, 0.25);
+      background: #10131d;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #ffffff;
       transition: all 0.2s ease;
     }
     .ewc-input:focus {
-      border-color: #f59e0b;
-      box-shadow: 0 0 18px rgba(245, 158, 11, 0.3);
+      border-color: #00ff88;
+      box-shadow: 0 0 16px rgba(0, 255, 136, 0.25);
       outline: none;
     }
     .active-nav-tab {
-      background: linear-gradient(180deg, rgba(245, 158, 11, 0.25) 0%, rgba(245, 158, 11, 0.05) 100%);
-      color: #fbbf24;
-      border-color: rgba(245, 158, 11, 0.6);
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: #00ff88;
+      border-color: rgba(0, 255, 136, 0.4);
     }
     input, select, textarea {
       font-size: 16px !important;
@@ -265,27 +255,29 @@
 
         <!-- Left Column: Registration Card -->
         <div class="lg:col-span-5 space-y-6">
-          <section class="ewc-card rounded-3xl p-5 sm:p-6 border-amber-500/30 relative overflow-hidden">
-            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+          <section class="ewc-container rounded-3xl p-5 sm:p-6 relative overflow-hidden">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
               <div>
-                <span class="text-[10px] font-black uppercase tracking-widest text-amber-400 font-ewc">PLAYER ENTRY</span>
-                <h2 class="font-ewc text-xl sm:text-2xl font-black text-white uppercase mt-0.5">
-                  Register for Tournament
+                <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 font-ewc">OFFICIAL REGISTRATION</span>
+                <h2 class="font-ewc text-2xl font-black text-white uppercase mt-0.5">
+                  Sign Up for Tournament
                 </h2>
+                <p class="text-xs text-slate-400 mt-0.5">Enter your name and WhatsApp number to secure your knockout slot.</p>
               </div>
-              <span class="font-ewc text-xl font-black text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-xl border border-emerald-500/20">
-                ₹20
-              </span>
+              <div class="text-right shrink-0">
+                <span class="font-ewc text-2xl font-black text-emerald-400">₹20</span>
+                <div class="text-[10px] text-slate-400 uppercase tracking-widest">Entry Fee</div>
+              </div>
             </div>
 
-            <!-- EWC Live Competitor Card Preview -->
-            <div class="mb-4 rounded-2xl bg-gradient-to-br from-slate-950 to-slate-900 p-3.5 border border-amber-500/30 shadow-inner">
-              <div class="flex items-center justify-between text-[10px] text-amber-400 font-ewc font-bold uppercase tracking-wider mb-2">
+            <!-- EWC Competitor Pass Preview -->
+            <div class="mb-4 rounded-2xl bg-[#090b12] p-3.5 border border-white/10">
+              <div class="flex items-center justify-between text-[10px] text-emerald-400 font-ewc font-bold uppercase tracking-wider mb-2">
                 <span>EWC COMPETITOR PASS</span>
-                <span class="text-emerald-400">● SLOT VERIFICATION</span>
+                <span class="text-amber-400">● SLOT VERIFICATION</span>
               </div>
               <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center font-ewc text-xl font-black text-slate-950 shrink-0">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-emerald-400 to-cyan-400 flex items-center justify-center font-ewc text-xl font-black text-slate-950 shrink-0">
                   <span id="previewAvatarInitial">?</span>
                 </div>
                 <div class="min-w-0">
@@ -299,17 +291,17 @@
               </div>
             </div>
 
-            <!-- How to Pay Note -->
-            <div class="mb-4 p-3 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-300 space-y-2">
+            <!-- Verified Payment Instructions Box -->
+            <div class="mb-4 p-3.5 rounded-2xl bg-[#090b12] border border-white/10 text-xs text-slate-300 space-y-2">
               <div class="flex items-center justify-between">
-                <span class="font-bold text-amber-400 text-xs">How to Pay ₹20 Entry Fee:</span>
-                <span class="text-[10px] text-slate-400">UPI / Cash</span>
+                <span class="font-bold text-white text-xs">Entry Fee: ₹20 per player</span>
+                <span class="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">UPI / Cash</span>
               </div>
-              <p id="upiPaymentNote" class="text-xs text-slate-300 leading-relaxed">
+              <p id="upiPaymentNote" class="text-xs text-slate-300 leading-relaxed font-normal">
                 Pay ₹20 entry fee to the Organiser via UPI / Cash to confirm your slot.
               </p>
-              <div class="pt-2 border-t border-slate-800 flex items-center justify-between gap-2">
-                <span class="text-[11px] text-slate-400">Questions about payment?</span>
+              <div class="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
+                <span class="text-[11px] text-slate-400">Need to talk or send screenshot?</span>
                 <a id="organiserPublicWaLink" href="javascript:void(0)" class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs">
                   💬 Chat on WhatsApp
                 </a>
@@ -319,7 +311,7 @@
             <form id="playerRegForm" class="space-y-3.5">
               <div>
                 <label for="regPlayerName" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
-                  Your Name / In-Game Name <span class="text-rose-400">*</span>
+                  Player Name / In-Game Name <span class="text-rose-400">*</span>
                 </label>
                 <input
                   id="regPlayerName"
@@ -334,7 +326,7 @@
               <div>
                 <label for="regWhatsApp" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1 flex items-center justify-between">
                   <span>WhatsApp Mobile Number <span class="text-rose-400">*</span></span>
-                  <span class="text-[10px] text-emerald-400">Organiser will talk with you</span>
+                  <span class="text-[10px] text-emerald-400">For payment & room code</span>
                 </label>
                 <div class="relative">
                   <span class="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-400 font-bold text-xs">+91</span>
@@ -352,7 +344,7 @@
               <div>
                 <label for="regEfootballId" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1 flex items-center justify-between">
                   <span>eFootball User ID <span class="text-slate-500 font-normal">(Optional)</span></span>
-                  <span class="text-[10px] text-slate-400">Used for friend match</span>
+                  <span class="text-[10px] text-slate-400">For friend match</span>
                 </label>
                 <input
                   id="regEfootballId"
@@ -365,7 +357,7 @@
 
               <div>
                 <label for="regContactNote" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
-                  Payment / Friend Note <span class="text-slate-500 font-normal">(Optional)</span>
+                  Payment Details / Note <span class="text-slate-500 font-normal">(Optional)</span>
                 </label>
                 <input
                   id="regContactNote"
@@ -376,13 +368,19 @@
                 />
               </div>
 
-              <button
-                id="submitRegBtn"
-                type="submit"
-                class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 active:scale-[0.99] text-slate-950 font-black font-ewc text-base uppercase tracking-wider shadow-lg shadow-amber-950/60 transition"
-              >
-                Register Now (Entry Fee: ₹20)
-              </button>
+              <div class="pt-1">
+                <button
+                  id="submitRegBtn"
+                  type="submit"
+                  class="w-full py-3.5 px-4 rounded-xl bg-[#00ff88] hover:bg-[#34d399] active:scale-[0.99] text-slate-950 font-black font-ewc text-base uppercase tracking-wider shadow-lg shadow-emerald-950/50 transition"
+                >
+                  Create Player Account (₹20 Entry)
+                </button>
+              </div>
+
+              <p class="text-[11px] text-slate-500 text-center pt-1">
+                By signing up, you agree to fair play rules and knockout friend match conditions.
+              </p>
             </form>
           </section>
 
